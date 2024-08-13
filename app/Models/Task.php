@@ -15,6 +15,8 @@ class Task extends Model
         'status_id',
         'created_by',
         'assigned_to',
+        'document_path', // Add this field
+
     ];
 
     // Relationships

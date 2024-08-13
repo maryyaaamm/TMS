@@ -13,6 +13,7 @@
                     <th>Status</th>
                     <th>Assigned To</th>
                     <th>Actions</th>
+                    <th>Document</th>
                 </tr>
             </thead>
             <tbody>
@@ -29,6 +30,15 @@
                                 <button type="submit" class="btn btn-danger">Delete</button>
                             </form>
                             <a href="{{ route('tasks.assign', $task->id) }}" class="btn btn-info">Assign</a>
+                        </td>
+                        <td>
+                            @if ($task->document_path)
+                                <a href="{{ route('tasks.downloadDocument', $task->id) }}"
+                                    class="btn btn-secondary">Download Document</a>
+                            @else
+                                Document is not uploaded
+                            @endif
+
                         </td>
                     </tr>
                 @endforeach

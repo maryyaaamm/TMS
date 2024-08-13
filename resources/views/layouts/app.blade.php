@@ -88,13 +88,13 @@
 </head>
 <body>
     <!-- Navbar -->
-    <nav class="navbar">
+    {{-- <nav class="navbar">
         <a href="{{ url('/') }}">{{ config('app.name', 'Laravel') }}</a>
         <a href="{{ route('dashboard') }}">Dashboard</a>
         <a href="{{ route('tasks.index') }}">Tasks</a>
         <a href="{{ route('users.index') }}">Users</a>
         <!-- Add more links as needed -->
-    </nav>
+    </nav> --}}
 
     <!-- Page Content -->
     <div class="container">

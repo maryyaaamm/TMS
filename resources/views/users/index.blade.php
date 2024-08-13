@@ -9,7 +9,7 @@
                 <tr style="background-color: #333; color: #ff69b4; text-transform: uppercase; letter-spacing: 1px; font-size: 1rem;">
                     <th style="padding: 10px; border-bottom: 2px solid #ff69b4; border-right: 1px solid #ff69b4;">Name</th>
                     <th style="padding: 10px; border-bottom: 2px solid #ff69b4; border-right: 1px solid #ff69b4;">Email</th>
-                    <th style="padding: 10px; border-bottom: 2px solid #ff69b4; border-right: 1px solid #ff69b4;">Role</th>
+                    {{-- <th style="padding: 10px; border-bottom: 2px solid #ff69b4; border-right: 1px solid #ff69b4;">Role</th> --}}
                     <th style="padding: 10px; border-bottom: 2px solid #ff69b4;">Actions</th>
                 </tr>
             </thead>
@@ -18,11 +18,11 @@
                     <tr style="transition: background-color 0.3s ease; font-size: 0.9rem; text-align: center;">
                         <td style="padding: 10px; border-bottom: 1px solid #ff69b4; border-right: 1px solid #ff69b4;">{{ $user->name }}</td>
                         <td style="padding: 10px; border-bottom: 1px solid #ff69b4; border-right: 1px solid #ff69b4;">{{ $user->email }}</td>
-                        <td style="padding: 10px; border-bottom: 1px solid #ff69b4; border-right: 1px solid #ff69b4;">{{ $user->roles->pluck('name')->implode(', ') }}</td>
+                        {{-- <td style="padding: 10px; border-bottom: 1px solid #ff69b4; border-right: 1px solid #ff69b4;">{{ $user->roles->pluck('name')->implode(', ') }}</td> --}}
                         <td style="padding: 10px; border-bottom: 1px solid #ff69b4;">
                             <a href="{{ route('tasks.assign', $user->id) }}" class="btn" style="color: #fff; background-color: #ff69b4; padding: 8px 12px; border-radius: 5px; text-decoration: none; transition: background-color 0.3s ease;">
                                 Assign Tasks
-                            </a>
+                            </a>                            
                         </td>
                     </tr>
                 @endforeach

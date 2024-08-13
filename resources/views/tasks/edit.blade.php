@@ -22,6 +22,17 @@
                 @endforeach
             </select>
         </div>
+        <div class="form-group">
+            <label for="assigned_to">Assigned To</label>
+            <select name="assigned_to" id="assigned_to" class="form-control">
+                <option value="">None</option>
+                @foreach ($users as $user)
+                    <option value="{{ $user->id }}" {{ $task->assigned_to == $user->id ? 'selected' : '' }}>
+                        {{ $user->name }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
         <button type="submit" class="btn btn-success">Update Task</button>
     </form>
 </div>

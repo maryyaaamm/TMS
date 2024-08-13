@@ -17,6 +17,7 @@
                         <th>Status</th>
                         <th>Assigned To</th>
                         <th>Submit Document</th>
+                        <th>Document</th> <!-- New column for document -->
                     </tr>
                 </thead>
                 <tbody>
@@ -28,11 +29,16 @@
                             <td>
                                 <form action="{{ route('tasks.submitDocument', $task->id) }}" method="POST" enctype="multipart/form-data">
                                     @csrf
-                                    <div class="form-group">
-                                        <input type="file" name="document" required>
-                                    </div>
+                                    <input type="file" name="document" accept=".pdf,.doc,.docx">
                                     <button type="submit" class="btn btn-primary">Submit Document</button>
                                 </form>
+                            </td>
+                            <td>
+                                @if ($task->document_path)
+                                <a href="{{ route('tasks.downloadDocument', $task->id) }}" class="btn btn-secondary">Download Document</a>
+                            @else
+                                Document is not uploaded
+                            @endif
                             </td>
                         </tr>
                     @endforeach
@@ -50,6 +56,7 @@
                         <th>Title</th>
                         <th>Status</th>
                         <th>Submit Document</th>
+                        <th>Document</th> <!-- New column for document -->
                     </tr>
                 </thead>
                 <tbody>
@@ -58,14 +65,23 @@
                             <td>{{ $task->title }}</td>
                             <td>{{ $task->status->name ?? 'No status' }}</td>
                             <td>
-                                <form action="{{ route('tasks.submitDocument', $task->id) }}" method="POST" enctype="multipart/form-data">
-                                    @csrf
-                                    <div class="form-group">
-                                        <input type="file" name="document" required>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">Submit Document</button>
-                                </form>
+                                @if ($task->assignedUser && $task->assignedUser->id === Auth::id())
+                                    <form action="{{ route('tasks.submitDocument', $task->id) }}" method="POST" enctype="multipart/form-data">
+                                        @csrf
+                                        <input type="file" name="document" accept=".pdf,.doc,.docx">
+                                        <button type="submit" class="btn btn-primary">Submit Document</button>
+                                    </form>
+                                @else
+                                    <p>You are not assigned to this task.</p>
+                                @endif
                             </td>
+                                <td>
+                                    @if ($task->document_path)
+                                        <a href="{{ route('tasks.downloadDocument', $task->id) }}" class="btn btn-secondary">Download Document</a>
+                                    @else
+                                        Document is not uploaded
+                                    @endif
+                                </td>
                         </tr>
                     @endforeach
                 </tbody>
