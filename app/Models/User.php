@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Cache;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
@@ -15,6 +16,16 @@ class User extends Authenticatable
         'email',
         'password',
     ];
+//     public function tasks()
+//     {
+//         return $this->hasMany(Task::class, 'users_id');
+//     }
+    
+//     public function isOnline()
+// {
+//     // Example check using cache
+//     return Cache::has('user-is-online-' . $this->id);
+// }
 
     protected $hidden = [
         'password',
@@ -30,6 +41,7 @@ class User extends Authenticatable
     {
         return $this->hasMany(Task::class, 'created_by');
     }
+    
 
     public function tasksAssigned()
     {

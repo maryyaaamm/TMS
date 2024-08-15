@@ -2,21 +2,32 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\TaskUpdated;
 use App\Models\Task;
 use App\Models\TaskAssignment;
 use App\Models\User;
 use App\Models\TaskStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Contracts\Mail\Mailable;
 class TaskController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $tasks = Task::with('status', 'assignedUser')->get();
+        $query = Task::query();
+    
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where('title', 'like', "%{$search}%");
+        }
+    
+        $tasks = $query->paginate(10);
+    
         return view('tasks.index', compact('tasks'));
     }
-
+    
     public function create()
 {
     $statuses = TaskStatus::all(); // Assuming you have a TaskStatus model
@@ -57,22 +68,17 @@ public function edit($id)
 
 public function update(Request $request, $id)
 {
-    $request->validate([
-        'title' => 'required|string|max:255',
-        'description' => 'required|string',
-        'status_id' => 'required|exists:Task_statuses,id',
-        'assigned_to' => 'nullable|exists:users,id',
-    ]);
-
+    // Find the task by ID
     $task = Task::findOrFail($id);
-    $task->update([
-        'title' => $request->title,
-        'description' => $request->description,
-        'status_id' => $request->status_id,
-        'assigned_to' => $request->assigned_to,
-    ]);
 
-    return redirect()->route('tasks.index')->with('success', 'Task updated successfully');
+    // Validate and update the task
+    $task->update($request->only('title', 'description', 'status_id', 'assigned_to'));
+
+    // Send the email
+    Mail::to('maryammnaveedd6@gmail.com')->send(new TaskUpdated($task));
+
+    // Redirect or return a response
+    return redirect()->route('tasks.index')->with('success', 'Task updated and email sent!');
 }
 
 
@@ -83,29 +89,15 @@ public function update(Request $request, $id)
         return redirect()->route('tasks.index')->with('success', 'Task deleted successfully.');
     }
 
-    public function assignId($taskId)
-{
-    $task = Task::findOrFail($taskId);
-    $users = User::all();
-    $statuses = TaskStatus::all(); // Fetch all task statuses
-    return view('tasks.assign', compact('task', 'users', 'statuses'));
-}
-
+    public function assign($id)
+    {  $task = Task::findOrFail($id);
+        $statuses = TaskStatus::all(); // Assuming you have a Status model
+        $users = User::all(); // Fetch all users
     
-
-
-    // TaskController.php
-
-    public function assign(Request $request) {
-        {
-    $tasks = Task::all(); // Fetch all tasks
-    $users = User::all(); // Fetch all users
-    $statuses = TaskStatus::all(); // Fetch all statuses
-
-    return view('tasks.assign', compact('tasks', 'users', 'statuses'));
-}}
-
-
+        return view('tasks.edit', compact('task', 'statuses', 'users'));
+    }
+    
+    
    // app/Http/Controllers/TaskController.php
    public function assignTask(Request $request)
    {
@@ -134,38 +126,70 @@ public function userTasks()
 }
 
 
-    public function dashboard()
-    {
-        $tasks = Task::all();
-        $tasksCount = $tasks->count();
-        $completedTasksCount = $tasks->where('status_id', 3)->count();
-        $pendingTasksCount = $tasks->where('status_id', 1)->count();
+public function dashboard()
+{
+    $user = Auth::user();
 
-        return view('dashboard', compact('tasks', 'tasksCount', 'completedTasksCount', 'pendingTasksCount'));
+    if (!$user->hasRole('superadmin')) {
+        $tasksCount = Task::where('assigned_to', $user->id)->count();
+        $completedTasksCount = Task::where('assigned_to', $user->id)->where('status_id', 4)->count();
+        $pendingTasksCount = Task::where('assigned_to', $user->id)->where('status_id', 1)->count();
+        $submittedTasks = Task::where('assigned_to', $user->id)->where('status_id', 2)->get();
+        $inProgressTasks = Task::where('assigned_to', $user->id)->where('status_id', 3)->get();
+        $activeUsers = [];
+    } else {
+        $tasksCount = Task::count();
+        $completedTasksCount = Task::where('status_id', 4)->count();
+        $pendingTasksCount = Task::where('status_id', 1)->count();
+        $submittedTasks = Task::where('status_id', 2)->get();
+        $inProgressTasks = Task::where('status_id', 3)->get();
+        $activeUsers = User::with('roles')->paginate(10); // Paginate active users
     }
 
-    public function submitDocument(Request $request, $id)
-{
-    $request->validate([
-        'document' => 'required|mimes:pdf,doc,docx|max:2048',
-    ]);
+    $tasks = Task::with('status', 'assignedUser')->paginate(10); // Paginate tasks
 
+    return view('dashboard', compact(
+        'tasks',
+        'tasksCount',
+        'completedTasksCount',
+        'pendingTasksCount',
+        'submittedTasks',
+        'inProgressTasks',
+        'activeUsers'
+    ));
+}
+
+
+public function submitDocument(Request $request, $id)
+{
     $task = Task::findOrFail($id);
 
+    // Validate the request
+    $request->validate([
+        'document' => 'required|file|mimes:pdf,doc,docx|max:2048', // Adjust validation as needed
+    ]);
+
+    // Store the document
     if ($request->hasFile('document')) {
         $file = $request->file('document');
-        $filename = time() . '_' . $file->getClientOriginalName();
-        $path = $file->storeAs('documents', $filename, 'public');
-        
-        // Log path to check
-        // \Log::info('Document path: ' . $path);
-        
-        $task->document_path = $filename;
-        $task->save();
+        $filePath = $file->store('documents', 'public'); // Store the file in the 'public/documents' directory
+        $task->document_path = $filePath;
     }
 
-    return redirect()->back()->with('success', 'Document uploaded successfully!');
+    // Update task status based on the user's role
+    if (Auth::user()->hasRole('superadmin')) {
+        // Admin: Task status remains as 'in progress'
+        $task->status_id = 3; // Assuming '3' is the status ID for 'in progress'
+    } else {
+        // Regular user: Set status to 'submitted'
+        $task->status_id = 2; // Assuming '2' is the status ID for 'submitted'
+    }
+
+    $task->save();
+
+    return redirect()->back()->with('success', 'Document submitted successfully.');
 }
+
 
 public function downloadDocument($id)
 {
@@ -185,5 +209,3 @@ public function downloadDocument($id)
 }
 
 }
-
-

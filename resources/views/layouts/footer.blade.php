@@ -1,3 +1,4 @@
+
 <footer style="background-color: #000; color: #ff69b4; padding: 2rem 0; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
     <div style="max-width: 1200px; margin: 0 auto; text-align: center;">
         <h3 style="font-size: 1.75rem; font-weight: 600; margin-bottom: 0.5rem;">Stay Connected</h3>

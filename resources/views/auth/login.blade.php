@@ -1,157 +1,150 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #E9F1F7; /* Light Blue background */
+            color: #333; /* Dark Gray text color */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
 
-@section('content')
-<style>
-    /* Global Styles */
-    body {
-        font-family: 'Nunito', sans-serif;
-        background-color: #000000; /* Black background */
-        color: #ffffff; /* White text color */
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-        margin: 0;
-    }
-    
-    .navbar {
-        background-color: #111; /* Darker black for navbar */
-        padding: 1rem;
-        color: #ff69b4; /* Pink text color */
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 2px solid #ff69b4; /* Pink bottom border */
-    }
-    
-    .navbar a {
-        color: #ff69b4; /* Pink text color */
-        margin-right: 1rem;
-        text-decoration: none;
-        font-weight: 600;
-        transition: color 0.3s ease; /* Smooth color transition */
-    }
-    
-    .navbar a:hover {
-        color: #ffffff; /* White color on hover */
-    }
-    
-    .container {
-        padding: 2rem;
-    }
+        .form-container {
+            max-width: 500px; /* Increased width for better visibility */
+            width: 100%; /* Ensure full width within the max-width constraint */
+            background-color: #FFFFFF; /* White background for form container */
+            padding: 2rem; /* Padding for form container */
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        }
 
-    .form-container {
-        max-width: 400px;
-        margin: 0 auto;
-        background-color: #222; /* Dark background for form container */
-        padding: 2rem;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Subtle shadow */
-    }
-    
-    .form-container h2 {
-        font-size: 2rem;
-        color: #ff69b4; /* Pink text color */
-        margin-bottom: 1rem;
-        text-align: center;
-    }
-    
-    .form-group {
-        margin-bottom: 1.5rem;
-    }
-    
-    .form-label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-size: 1rem;
-        color: #ff69b4; /* Pink text color */
-    }
-    
-    .form-control {
-        width: 100%;
-        padding: 0.75rem;
-        border-radius: 5px;
-        border: 1px solid #ff69b4; /* Pink border */
-        background-color: #333; /* Dark background for inputs */
-        color: #ffffff; /* White text color */
-        transition: border-color 0.3s ease; /* Smooth border color transition */
-    }
-    
-    .form-control:focus {
-        border-color: #ff1493; /* Darker pink on focus */
-        outline: none;
-    }
-    
-    .btn {
-        padding: 0.75rem 1.5rem;
-        font-size: 1rem;
-        font-weight: 600;
-        text-decoration: none;
-        border-radius: 5px;
-        border: none;
-        cursor: pointer;
-        transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
-    }
-    
-    .btn-primary {
-        background-color: #ff69b4; /* Pink background */
-        color: #ffffff; /* White text color */
-        border: 1px solid #ff69b4; /* Pink border */
-    }
-    
-    .btn-primary:hover {
-        background-color: #ff1493; /* Darker pink on hover */
-        transform: scale(1.05); /* Slight scale effect */
-    }
+        .form-container h2 {
+            font-size: 1.75rem; /* Font size for header */
+            color: #007BFF; /* Blue color for header */
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
 
-    footer {
-        background-color: #111; /* Darker black for footer */
-        color: #ff69b4; /* Pink text color */
-        text-align: center;
-        padding: 1rem 0;
-        border-top: 2px solid #ff69b4; /* Pink top border */
-    }
-</style>
+        .form-group {
+            margin-bottom: 1.25rem; /* Margin between form fields */
+        }
 
-<div class="container">
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem; /* Margin below label */
+            font-size: 1rem;
+            color: #333; /* Dark Gray text color */
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem; /* Padding for input fields */
+            border-radius: 6px;
+            border: 1px solid #CED4DA; /* Light Gray border */
+            background-color: #FFFFFF; /* White background for inputs */
+            color: #333; /* Dark Gray text color */
+            transition: border-color 0.3s ease; /* Smooth border color transition */
+        }
+
+        .form-control:focus {
+            border-color: #007BFF; /* Blue border on focus */
+            outline: none;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem; /* Padding for buttons */
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
+        }
+
+        .btn-primary {
+            background-color: #007BFF; /* Blue background */
+            color: #FFFFFF; /* White text color */
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3; /* Darker Blue on hover */
+            transform: scale(1.05); /* Slight scale effect */
+        }
+
+        .form-footer {
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+
+        .form-forgot-password {
+            color: #007BFF; /* Blue color for forgot password link */
+            text-decoration: none;
+            display: block;
+            margin-bottom: 1rem; /* Margin below the link */
+            font-size: 0.9rem;
+        }
+
+        .form-forgot-password:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
     <div class="form-container">
         <h2>Log in</h2>
         <form method="POST" action="{{ route('login') }}">
             @csrf
 
-            <!-- Email Address -->
             <div class="form-group">
-                <x-input-label for="email" :value="__('Email')" class="form-label" />
-                <x-text-input id="email" class="form-control" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-                <x-input-error :messages="$errors->get('email')" class="form-error" />
+                <label for="email" class="form-label">Email</label>
+                <input id="email" class="form-control" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
+                @error('email')
+                    <span class="form-error" role="alert">
+                        <strong>{{ $message }}</strong>
+                    </span>
+                @enderror
             </div>
 
-            <!-- Password -->
             <div class="form-group">
-                <x-input-label for="password" :value="__('Password')" class="form-label" />
-                <x-text-input id="password" class="form-control" type="password" name="password" required autocomplete="current-password" />
-                <x-input-error :messages="$errors->get('password')" class="form-error" />
+                <label for="password" class="form-label">Password</label>
+                <input id="password" class="form-control" type="password" name="password" required autocomplete="current-password" />
+                @error('password')
+                    <span class="form-error" role="alert">
+                        <strong>{{ $message }}</strong>
+                    </span>
+                @enderror
             </div>
 
-            <!-- Remember Me -->
             <div class="form-group">
                 <label for="remember_me" class="form-check-label">
                     <input id="remember_me" type="checkbox" class="form-check-input" name="remember" />
-                    <span class="form-check-text">{{ __('Remember me') }}</span>
+                    <span class="form-check-text">Remember me</span>
                 </label>
             </div>
 
             <div class="form-footer">
                 @if (Route::has('password.request'))
                     <a class="form-forgot-password" href="{{ route('password.request') }}">
-                        {{ __('Forgot your password?') }}
+                        Forgot your password?
                     </a>
                 @endif
 
-                <x-primary-button class="btn btn-primary">
-                    {{ __('Log in') }}
-                </x-primary-button>
+                <button type="submit" class="btn btn-primary">
+                    Log in
+                </button>
             </div>
         </form>
     </div>
-</div>
-@endsection
+</body>
+</html>

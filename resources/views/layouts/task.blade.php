@@ -2,27 +2,10 @@
 <html lang="en">
 
 <head>
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
-
-    <!-- DataTables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
-
-    <!-- jQuery and DataTables JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-
-    <!-- DataTables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
-
-    <!-- jQuery and DataTables JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-
     <!-- Bootstrap JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -43,6 +26,9 @@
         }
     </script>
 
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -58,31 +44,41 @@
             <a href="{{ url('/') }}" class="text-mustard">Task Manager</a>
         </div>
         <div class="nav-links flex items-center space-x-6">
-            <a href="{{ url('/') }}" class="text-lg hover:text-teal flex items-center">
-                <i class="fas fa-home mr-2"></i> Home
-            </a>
-            <a href="{{ route('dashboard') }}" class="text-lg hover:text-teal flex items-center">
-                <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
-            </a>
-            <a href="{{ route('tasks.index') }}" class="text-lg hover:text-teal flex items-center">
-                <i class="fas fa-tasks mr-2"></i> Tasks
-            </a>
-            <a href="{{ route('users.index') }}" class="text-lg hover:text-teal flex items-center">
-                <i class="fas fa-users mr-2"></i> Users
-            </a>
-            <form method="POST" action="{{ route('logout') }}" style="display: inline;">
-                @csrf
-                <button type="submit" class="btn btn-logout">Logout</button>
-            </form>
+            @auth
+                @if(Auth::user()->hasRole('admin'))
+                    <a href="{{ url('/') }}" class="text-lg hover:text-teal flex items-center">
+                        <i class="fas fa-home mr-2"></i> Home
+                    </a>
+                    <a href="{{ route('dashboard') }}" class="text-lg hover:text-teal flex items-center">
+                        <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
+                    </a>
+                    {{-- <a href="{{ route('tasks.index') }}" class="text-lg hover:text-teal flex items-center">
+                        <i class="fas fa-tasks mr-2"></i> Tasks
+                    </a> --}}
+                    {{-- <a href="{{ route('users.index') }}" class="text-lg hover:text-teal flex items-center">
+                        <i class="fas fa-users mr-2"></i> Users
+                    </a> --}}
+                @endif
+                <a href="{{ url('/') }}" class="text-lg hover:text-teal flex items-center">
+                    <i class="fas fa-home mr-2"></i> Home
+                </a>
+                <a href="{{ route('dashboard') }}" class="text-lg hover:text-teal flex items-center">
+                    <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
+                </a>
+                {{-- <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="bg-[#468189] text-white px-6 py-3 rounded-lg hover:bg-[#F3CA20] transition ease-in-out duration-200 transform hover:scale-105">
+                        <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                    </button>
+                </form> --}}
+            @endauth
         </div>
     </nav>
 
     <!-- Page Content -->
-    <main class="flex-1 p-6">
+    <main class="container-fluid p-0 m-0">
         @yield('content')
     </main>
-
-    <!-- Footer -->
     <footer class="bg-black text-light-beige text-center py-6 border-t-2 border-teal">
         <div class="max-w-screen-md mx-auto">
             <!-- Top Section: Company Info and Contact -->
@@ -92,9 +88,9 @@
             </div>
 
             <!-- Middle Section: Quotes -->
-            <div class="mb-4 italic text-lg">
+            {{-- <div class="mb-4 italic text-lg">
                 <p>"Efficiency is doing things right; effectiveness is doing the right things."</p>
-            </div>
+            </div> --}}
 
             <!-- Bottom Section: Footer Details and Social Links -->
             <div class="flex justify-center gap-4">

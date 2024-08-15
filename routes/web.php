@@ -3,27 +3,50 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Contracts\Mail\Mailable;
+use App\Models\Task;
+
+Route::get('/test-email', function () {
+    $task = Task::find(1); // Adjust as needed
+
+    if (!$task) {
+        return 'Task not found!';
+    }
+
+    // Include additional task details
+    $details = [
+        'title' => $task->title,
+        'description' => $task->description,
+        'status' => $task->status->name, // Assuming you have a relationship to get status name
+        'assignedTo' => $task->assignedTo ? $task->assignedTo->name : 'None', // Assuming you have a relationship to get assigned user name
+        'created_at' => $task->created_at->format('Y-m-d H:i:s'),
+        'updated_at' => $task->updated_at->format('Y-m-d H:i:s'),
+    ];
+
+    Mail::to('maryammnaveedd6@gmail.com')->send(new TaskUpdated($details));
+    return 'Test email sent with task details!';
+});
+
 
 // Routes that require authentication
 Route::middleware(['auth'])->group(function () {
-    // Dashboard Route
     Route::get('/dashboard', [TaskController::class, 'dashboard'])->name('dashboard');
 
-    // Task Routes
     Route::prefix('tasks')->name('tasks.')->group(function () {
         Route::get('/', [TaskController::class, 'index'])->name('index');
         Route::get('/create', [TaskController::class, 'create'])->name('create');
         Route::post('/', [TaskController::class, 'store'])->name('store');
         Route::get('/{id}/edit', [TaskController::class, 'edit'])->name('edit');
-        Route::put('/{id}', [TaskController::class, 'update'])->name('update');
+        Route::get('/{id}/edit', [TaskController::class, 'assign'])->name('edit');
+        Route::put('/{id}', [TaskController::class, 'update'])->name('update'); // Keep this as the main update route
         Route::delete('/{id}', [TaskController::class, 'destroy'])->name('destroy');
         Route::post('/{id}/submit-document', [TaskController::class, 'submitDocument'])->name('submitDocument');
         Route::get('/{id}/download', [TaskController::class, 'downloadDocument'])->name('downloadDocument');
-        Route::get('/assign', [TaskController::class, 'assign'])->name('assign');
+        // Route::get('/assign/{id}', [TaskController::class, 'assign'])->name('assign'); // Consider renaming to tasks.assign for consistency
         Route::post('/assignTask', [TaskController::class, 'assignTask'])->name('assignTask');
         Route::get('/userTasks', [TaskController::class, 'userTasks'])->name('userTasks');
     });
-    
 
     // User Routes
     Route::prefix('users')->name('users.')->group(function () {

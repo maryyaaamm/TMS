@@ -1,37 +1,38 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container" style="background-color: #000; color: #fff; padding: 20px; border-radius: 10px; min-height: 80vh; display: flex; flex-direction: column; justify-content: space-between;">
-    <div>
-        <h1 style="text-align: center; font-size: 2.5rem; margin-bottom: 20px; color: #ff69b4; font-family: 'Arial', sans-serif;">Users</h1>
-        <table class="table" style="width: 100%; border-collapse: separate; border-spacing: 0; background-color: #1c1c1c; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
-            <thead>
-                <tr style="background-color: #333; color: #ff69b4; text-transform: uppercase; letter-spacing: 1px; font-size: 1rem;">
-                    <th style="padding: 10px; border-bottom: 2px solid #ff69b4; border-right: 1px solid #ff69b4;">Name</th>
-                    <th style="padding: 10px; border-bottom: 2px solid #ff69b4; border-right: 1px solid #ff69b4;">Email</th>
-                    {{-- <th style="padding: 10px; border-bottom: 2px solid #ff69b4; border-right: 1px solid #ff69b4;">Role</th> --}}
-                    <th style="padding: 10px; border-bottom: 2px solid #ff69b4;">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($users as $user)
-                    <tr style="transition: background-color 0.3s ease; font-size: 0.9rem; text-align: center;">
-                        <td style="padding: 10px; border-bottom: 1px solid #ff69b4; border-right: 1px solid #ff69b4;">{{ $user->name }}</td>
-                        <td style="padding: 10px; border-bottom: 1px solid #ff69b4; border-right: 1px solid #ff69b4;">{{ $user->email }}</td>
-                        {{-- <td style="padding: 10px; border-bottom: 1px solid #ff69b4; border-right: 1px solid #ff69b4;">{{ $user->roles->pluck('name')->implode(', ') }}</td> --}}
-                        <td style="padding: 10px; border-bottom: 1px solid #ff69b4;">
-                            <a href="{{ route('tasks.assign', $user->id) }}" class="btn" style="color: #fff; background-color: #ff69b4; padding: 8px 12px; border-radius: 5px; text-decoration: none; transition: background-color 0.3s ease;">
-                                Assign Tasks
-                            </a>                            
-                        </td>
+<div class="max-w-6xl mx-auto p-6 bg-gray-100 rounded-lg shadow-lg min-h-screen flex flex-col justify-between">
+    <div class="mb-12">
+        <h1 class="text-center text-pink-500 text-4xl font-bold mb-8 font-sans">
+            <i class="fas fa-users mr-2"></i> Users
+        </h1>
+        <div class="overflow-x-auto">
+            <table class="w-full bg-white border border-gray-300 rounded-lg shadow-sm mt-4 mb-8">
+                <thead class="bg-pink-100 text-pink-500 text-sm uppercase">
+                    <tr>
+                        <th class="px-4 py-3 border-b border-pink-500 font-semibold">Name</th>
+                        <th class="px-4 py-3 border-b border-pink-500 font-semibold">Email</th>
+                        {{-- <th class="px-4 py-3 border-b border-pink-500 font-semibold">Role</th> --}}
+                        <th class="px-4 py-3 border-b border-pink-500 font-semibold">Actions</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                </thead>
+                <tbody class="text-gray-700 text-sm">
+                    @foreach($users as $user)
+                        <tr class="hover:bg-pink-50 transition-colors">
+                            <td class="px-4 py-3 border-b border-gray-300">{{ $user->name }}</td>
+                            <td class="px-4 py-3 border-b border-gray-300">{{ $user->email }}</td>
+                            {{-- <td class="px-4 py-3 border-b border-gray-300">{{ $user->roles->pluck('name')->implode(', ') }}</td> --}}
+                            <td class="px-4 py-3 border-b border-gray-300 text-center">
+                                <a href="{{ route('tasks.edit', $user->id) }}"
+                                   class="inline-block px-4 py-2 bg-pink-500 text-white font-bold rounded-md hover:bg-pink-600 transition-colors">
+                                   Assign Task
+                                </a>                            
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
-
-<footer style="background-color: #333; color: #ff69b4; text-align: center; padding: 10px; font-size: 0.8rem; font-family: 'Arial', sans-serif;">
-    &copy; 2024 Your Website. All Rights Reserved. | Contact: email@example.com
-</footer>
 @endsection
