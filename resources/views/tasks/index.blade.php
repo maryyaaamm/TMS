@@ -1,234 +1,274 @@
-@extends('layouts.task')
+@extends('layouts.dashboard')
 
 @section('content')
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            background-color: #fff;
-        }
 
-        th, td {
-            padding: 16px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
+<div class="container my-5">
+    <h2 class="text-center mb-4">Manage Users Tasks <i class="fas fa-tasks"></i></h2>
 
-        th {
-            background-color: #f3f3f3; /* Light gray for header background */
-            font-weight: bold;
-            color: black; /* Ensures the header text is black */
-        }
-
-        tr:hover {
-            background-color: #f5f5f5; /* Light gray for hover effect */
-        }
-
-        .search-form input[type="text"] {
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 20px; /* Makes the search bar rounded */
-            width: 100%;
-            max-width: 300px;
-            margin-right: 8px;
-            color: black; /* Ensures text is visible */
-            font-weight: bold; /* Makes the text bold */
-        }
-
-        .search-form button {
-            padding: 8px 16px;
-            background-color: #000;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .search-form button:hover {
-            background-color: #333;
-        }
-
-        /* Styling for the table and buttons */
-        .table-responsive {
-            margin-top: 20px;
-        }
-
-        .table thead th {
-            background-color: #4B3832;
-            color: #FAF3E0;
-        }
-
-        .table tbody tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        .table tbody tr:hover {
-            background-color: #f1f1f1;
-        }
-
-        .btn-primary {
-            background-color: #D4A5A5;
-            border: none;
-        }
-
-        .btn-primary:hover {
-            background-color: #F3CA20;
-        }
-
-        .btn-secondary {
-            background-color: #468189;
-            border: none;
-        }
-
-        .btn-secondary:hover {
-            background-color: #356f6b;
-        }
-
-        /* Styling for the search input and icon */
-        .dataTables_filter {
-            position: relative;
-        }
-
-        .search-icon {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #888;
-            pointer-events: none;
-        }
-
-        .dataTables_filter input[type="search"] {
-            padding-right: 30px;
-            border-radius: 20px;
-            color: black; /* Ensures the text in the search bar is black */
-            font-weight: bold; /* Makes the search text bold */
-        }
-
-        .dataTables_wrapper .dataTables_paginate .paginate_button {
-            padding: 5px 10px;
-            margin: 0 3px;
-            border-radius: 5px;
-            background: #D4A5A5;
-            color: #fff !important;
-            text-decoration: none;
-        }
-
-        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-            background: #F3CA20;
-        }
-
-    </style>
-
-    <div class="max-w-6xl mx-auto p-6 bg-gray-100 rounded-lg shadow-lg font-sans">
-        <h1 class="text-center text-black font-bold text-3xl mb-6">
-            <i class="fas fa-tasks"></i> Tasks
-        </h1>
-
-        <div class="mb-6 flex justify-between items-center">
-            <a href="{{ route('tasks.create') }}"
-                class="inline-block px-6 py-2 bg-black text-white font-bold rounded-full transition-all hover:bg-gray-800">
-                <i class="fas fa-plus-circle"></i> Create Task
-            </a>
-
-            <!-- Search Form -->
-            <form action="{{ route('tasks.index') }}" method="GET" class="search-form flex">
-                <input type="text" name="search" placeholder="Search tasks..." value="{{ request('search') }}">
-                <button type="submit"><i class="fas fa-search"></i> Search</button>
-            </form>
+    @if(Auth::user()->hasRole('superadmin'))
+        <!-- Status Filter Dropdown -->
+        <div class="d-flex justify-content-end mb-3">
+            <select id="statusFilter" class="form-control w-auto me-2">
+                <option value="">Filter by Status</option>
+                <option value="Completed">Completed</option>
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+            </select>
         </div>
+        
+        @if ($tasks->isEmpty())
+            <p class="text-center">No tasks available.</p>
+        @else
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered" id="tasksTable">
+                    <thead class="table-header">
+                        <tr>
+                            <th class="text-center">Title</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center">Assigned To</th>
+                            <th class="text-center">Submit Document</th>
+                            <th class="text-center">Document</th>
+                        </tr>
+                    </thead>
+                    
+                    <tbody>
+                        @foreach ($tasks as $task)
+                            <tr class="table-row">
+                                <td class="text-center">{{ $task->title }}</td>
+                                <td class="text-center">
+                                    @if (Auth::user()->hasRole('superadmin'))
+                                        {{ $task->status->name === 'submitted' ? 'In Progress' : $task->status->name }}
+                                    @else
+                                        {{ $task->status->name ?? 'No status' }}
+                                    @endif
+                                </td>
+                                <td class="text-center">{{ $task->assignedUser->name ?? 'Not assigned' }}</td>
+                                <td class="px-6 py-4 border-b border-gray-300">
+                                    <a href="{{ route('tasks.edit', $task->id) }}"
+                                        class="inline-block px-4 py-2 bg-gray-700 text-white rounded-full transition-all hover:bg-gray-800 mr-2 task-assign-btn"
+                                        id="task-assign-btn-{{ $task->id }}">
+                                        <i class="fas fa-edit"></i> 
+                                        @if($task->assignedUser)
+                                            Assigned
+                                        @else
+                                            Assign Tasks
+                                        @endif
+                                    </a>
+                                    <form action="{{ route('tasks.destroy', $task->id) }}" method="POST" class="inline-block">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                            class="px-4 py-2 bg-red-600 text-white rounded-full transition-all hover:bg-red-700">
+                                            <i class="fas fa-trash-alt"></i> Delete
+                                        </button>
+                                    </form>
+                                </td>
+        
+                                <td class="text-center">
+                                    @if ($task->document_path)
+                                        <a href="{{ route('tasks.downloadDocument', $task->id) }}" class="btn btn-secondary"><i class="fas fa-download"></i> Download</a>
+                                    @else
+                                        Not Uploaded
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
+    @else
+        @if ($tasks->isEmpty())
+            <p class="text-center">No tasks assigned.</p>
+        @else
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered" id="tasksTable">
+                    <thead class="table-header">
+                        <tr>
+                            <th class="text-center">Title</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center">Submit Document</th>
+                            <th class="text-center">Document</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($tasks as $task)
+                            <tr class="table-row">
+                                <td class="text-center">{{ $task->title }}</td>
+                                <td class="text-center">{{ $task->status->name ?? 'No status' }}</td>
+                                <td class="text-center">
+                                    @if ($task->assignedUser && $task->assignedUser->id === Auth::id())
+                                        @if (!$task->document_path)
+                                            <form action="{{ route('tasks.submitDocument', $task->id) }}" method="POST" enctype="multipart/form-data">
+                                                @csrf
+                                                <input type="file" name="document" accept=".pdf,.doc,.docx" class="form-control-file">
+                                                <button type="submit" class="btn btn-primary mt-2"><i class="fas fa-upload"></i> Submit</button>
+                                            </form>
+                                        @else
+                                            <p class="text-success"><i class="fas fa-check-circle"></i> Document Submitted</p>
+                                        @endif
+                                    @else
+                                        @if ($task->assignedUser && $task->assignedUser->id !== Auth::id())
+                                            <p>You are not assigned to this task.</p>
+                                        @endif
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if ($task->document_path)
+                                        <a href="{{ route('tasks.downloadDocument', $task->id) }}" class="btn btn-secondary"><i class="fas fa-download"></i> Download</a>
+                                    @else
+                                        Not Uploaded
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
+    @endif
+</div>
+<!-- Custom CSS -->
+<style>
+    body {
+        background-color: #f8f9fa;
+        color: #333;
+    }
 
-        <table id="tasksTable" class="w-full bg-white border border-gray-300 rounded-lg overflow-hidden">
-            <thead class="bg-gray-200 text-black">
-                <tr>
-                    <th class="px-6 py-3 text-left border-b border-gray-300 font-semibold">
-                        <i class="fas fa-heading"></i> Title
-                    </th>
-                    <th class="px-6 py-3 text-left border-b border-gray-300 font-semibold">
-                        <i class="fas fa-info-circle"></i> Status
-                    </th>
-                    <th class="px-6 py-3 text-left border-b border-gray-300 font-semibold">
-                        <i class="fas fa-user"></i> Assigned To
-                    </th>
-                    <th class="px-6 py-3 text-left border-b border-gray-300 font-semibold">
-                        <i class="fas fa-cogs"></i> Actions
-                    </th>
-                    <th class="px-6 py-3 text-left border-b border-gray-300 font-semibold">
-                        <i class="fas fa-file-download"></i> Document
-                    </th>
-                </tr>
-            </thead>
-            <tbody class="text-gray-700">
-                @foreach ($tasks as $task)
-                    <tr class="hover:bg-gray-100 transition-colors">
-                        <td class="px-6 py-4 border-b border-gray-300">{{ $task->title }}</td>
-                        <td class="px-6 py-4 border-b border-gray-300">
-                            {{-- Superadmin sees "In Progress" for submitted tasks, others see actual status --}}
-                            @if (Auth::user()->hasRole('superadmin'))
-                                {{ $task->status->name === 'submitted' ? 'In Progress' : $task->status->name }}
-                            @else
-                                {{ $task->status->name ?? 'No status' }}
-                            @endif
-                        </td>
-                        <td class="px-6 py-4 border-b border-gray-300">
-                            {{ $task->assignedUser ? $task->assignedUser->name : 'Not assigned' }}
-                        </td>
-                        <td class="px-6 py-4 border-b border-gray-300">
-                            <a href="{{ route('tasks.edit', $task->id) }}"
-                                class="inline-block px-4 py-2 bg-gray-700 text-white rounded-full transition-all hover:bg-gray-800 mr-2">
-                                <i class="fas fa-edit"></i> Edit
-                            </a>
-                            <form action="{{ route('tasks.destroy', $task->id) }}" method="POST" class="inline-block">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit"
-                                    class="px-4 py-2 bg-red-600 text-white rounded-full transition-all hover:bg-red-700">
-                                    <i class="fas fa-trash-alt"></i> Delete
-                                </button>
-                            </form>
-                        </td>
-                        <td class="px-6 py-4 border-b border-gray-300">
-                            @if ($task->document_path)
-                                <a href="{{ route('tasks.downloadDocument', $task->id) }}"
-                                    class="inline-block px-4 py-2 bg-gray-500 text-white rounded-full transition-all hover:bg-gray-600">
-                                    <i class="fas fa-download"></i> Download Document
-                                </a>
-                            @else
-                                <span class="text-gray-500"><i class="fas fa-exclamation-circle"></i> Document is not uploaded</span>
-                            @endif
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+    h2 {
+        color: #0056b3;
+        font-weight: bold;
+        font-size: 2rem;
+    }
 
-        <div class="mt-6">
-            {{ $tasks->links() }}
-        </div>
-    </div>
+    .table {
+        margin-top: 20px;
+        background-color: #ffffff;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+    }
 
-    <!-- jQuery (necessary for DataTables) -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- DataTables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
-    <!-- DataTables JS -->
-    <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
-    <!-- DataTables Initialization -->
-    <script>
-        $(document).ready(function() {
-            $('#tasksTable').DataTable({
-                paging: true,
-                searching: true,
-                language: {
-                    search: '',
-                    searchPlaceholder: "Search tasks...",
-                },
-                dom: '<"d-flex justify-content-between align-items-center"f>t<"d-flex justify-content-between align-items-center"ip>',
-            });
+    .table-header {
+        background-color: #0056b3;
+        color: #ffffff;
+    }
 
-            // Add search icon to the search input
-            $('.dataTables_filter input[type="search"]').addClass('form-control').after('<i class="fas fa-search search-icon"></i>');
-        });
-    </script>
+    .table-hover tbody tr:hover {
+        background-color: #e9ecef;
+    }
+
+    th, td {
+        padding: 12px;
+        text-align: center;
+        border-right: 1px solid #dee2e6;
+    }
+
+    th {
+        font-weight: bold;
+    }
+
+    td {
+        color: #0056b3;
+    }
+
+    .btn-primary {
+        background-color: #0056b3;
+        border: none;
+        color: #ffffff;
+    }
+
+    .btn-primary:hover {
+        background-color: #004085;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        border: none;
+        color: #ffffff;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+    }
+
+    .form-control-file {
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+    }
+
+    .container {
+        padding-bottom: 50px;
+        color: #dee2e6
+    }
+
+    .dataTables_filter {
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+    .dataTables_filter input {
+        border-radius: 50px;
+        border: 1px solid #ced4da;
+        padding: 10px 40px 10px 20px;
+        width: 300px;
+    }
+
+    .dataTables_filter .search-icon {
+        position: absolute;
+        top: 8px;
+        right: 15px;
+        font-size: 20px;
+        color: #28a745;
+    }
+
+    .table-row {
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .text-success {
+        color: #28a745;
+    }
+
+    h2 i {
+        margin-left: 10px;
+        font-size: 1.5rem;
+    }
+</style>
+
+<!-- jQuery (necessary for DataTables) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+<!-- DataTables Initialization -->
+<script>
+$(document).ready(function() {
+    var table = $('#tasksTable').DataTable({
+        paging: true, 
+        searching: true,
+        order: [[0, 'desc']], // This will sort the first column (Title) in descending order by default
+        language: {
+            search: '',
+            searchPlaceholder: "Search tasks...",
+        },
+        dom: '<"d-flex justify-content-between align-items-center"f>t<"d-flex justify-content-between align-items-center"ip>',
+    });
+
+    $('.dataTables_filter input[type="search"]').addClass('form-control').after('<i class="fas fa-search search-icon"></i>');
+
+    // Filter by status
+    $('#statusFilter').on('change', function() {
+        var status = $(this).val();
+        if (status) {
+            table.column(1).search(status).draw(); // Assuming status is in the second column (index 1)
+        } else {
+            table.column(1).search('').draw(); // Reset the filter
+        }
+    });
+});
+
+
+</script>
+
 @endsection

@@ -2,6 +2,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
+use App\Mail\TaskUpdated;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Contracts\Mail\Mailable;
@@ -46,14 +47,18 @@ Route::middleware(['auth'])->group(function () {
         // Route::get('/assign/{id}', [TaskController::class, 'assign'])->name('assign'); // Consider renaming to tasks.assign for consistency
         Route::post('/assignTask', [TaskController::class, 'assignTask'])->name('assignTask');
         Route::get('/userTasks', [TaskController::class, 'userTasks'])->name('userTasks');
+
     });
 
     // User Routes
-    Route::prefix('users')->name('users.')->group(function () {
-        Route::get('/', [UserController::class, 'index'])->name('index');
-        Route::get('/{id}/editPermissions', [UserController::class, 'editPermissions'])->name('editPermissions');
-        Route::put('/{id}/updatePermissions', [UserController::class, 'updatePermissions'])->name('updatePermissions');
-    });
+  // web.php
+Route::prefix('users')->name('users.')->group(function () {
+    Route::get('/', [UserController::class, 'index'])->name('index');
+    Route::get('/{id}/editPermissions', [UserController::class, 'editPermissions'])->name('editPermissions');
+    Route::put('/{id}/updatePermissions', [UserController::class, 'updatePermissions'])->name('updatePermissions');
+    Route::get('/{id}/view', [UserController::class, 'show'])->name('show'); // Update route name to 'show'
+});
+
 
     // Profile Routes
     Route::prefix('profile')->name('profile.')->group(function () {

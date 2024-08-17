@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Cache;
+use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
@@ -43,10 +44,21 @@ class User extends Authenticatable
     }
     
 
-    public function tasksAssigned()
-    {
-        return $this->hasMany(Task::class, 'assigned_to');
-    }
+   // User.php
+public function tasksAssigned()
+{
+    return $this->hasMany(Task::class, 'assigned_to');
+}
+public function roles()
+{
+    return $this->belongsToMany(Role::class, 'model_has_roles', 'model_id', 'role_id');
+}
+
+// User.php
+// public function tasks()
+// {
+//     return $this->hasMany(Task::class, 'assigned_user_id');
+// }
 
     public function taskAssignments()
     {

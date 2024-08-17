@@ -1,44 +1,59 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 
 @section('content')
+
 <div class="container my-5">
-    <h1 class="text-center mb-4 font-bold text-dark-brown">My Tasks</h1>
-    
+    <h2 class="text-center mb-4">Manage Your Tasks <i class="fas fa-tasks"></i></h2>
+
     @if(Auth::user()->hasRole('superadmin'))
-        <!-- Superadmin view: Display all tasks -->
-        <h2 class="mb-3 text-center text-soft-pink">All Tasks</h2>
+        <h2 class="mb-3 text-center text-primary">All Tasks</h2>
+        
+        <!-- Status Filter Dropdown -->
+        <div class="d-flex justify-content-end mb-3">
+            <select id="statusFilter" class="form-control w-auto me-2">
+                <option value="">Filter by Status</option>
+                <option value="Completed">Completed</option>
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+            </select>
+        </div>
+        
         @if ($tasks->isEmpty())
             <p class="text-center">No tasks available.</p>
         @else
             <div class="table-responsive">
-                <table class="table table-striped table-hover" id="tasksTable">
-                    <thead class="thead-dark">
+                <table class="table table-hover table-bordered" id="tasksTable">
+                    <thead class="table-header">
                         <tr>
-                            <th>Title</th>
-                            <th>Status</th>
-                            <th>Assigned To</th>
-                            <th>Submit Document</th>
-                            <th>Document</th> <!-- New column for document -->
+                            <th class="text-center">Title</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center">Assigned To</th>
+                            <th class="text-center">Submit Document</th>
+                            <th class="text-center">Document</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($tasks as $task)
-                            <tr>
-                                <td>{{ $task->title }}</td>
-                                <td>{{ $task->status->name ?? 'No status' }}</td>
-                                <td>{{ $task->assignedUser->name ?? 'Not assigned' }}</td>
-                                <td>
-                                    <form action="{{ route('tasks.submitDocument', $task->id) }}" method="POST" enctype="multipart/form-data">
-                                        @csrf
-                                        <input type="file" name="document" accept=".pdf,.doc,.docx" class="form-control-file">
-                                        <button type="submit" class="btn btn-primary mt-2"><i class="fas fa-upload"></i> Submit Document</button>
-                                    </form>
-                                </td>
-                                <td>
-                                    @if ($task->document_path)
-                                        <a href="{{ route('tasks.downloadDocument', $task->id) }}" class="btn btn-secondary"><i class="fas fa-download"></i> Download Document</a>
+                            <tr class="table-row">
+                                <td class="text-center">{{ $task->title }}</td>
+                                <td class="text-center">{{ $task->status->name ?? 'No status' }}</td>
+                                <td class="text-center">{{ $task->assignedUser->name ?? 'Not assigned' }}</td>
+                                <td class="text-center">
+                                    @if (!$task->document_path)
+                                        <form action="{{ route('tasks.submitDocument', $task->id) }}" method="POST" enctype="multipart/form-data">
+                                            @csrf
+                                            <input type="file" name="document" accept=".pdf,.doc,.docx" class="form-control-file">
+                                            <button type="submit" class="btn btn-primary mt-2"><i class="fas fa-upload"></i> Submit</button>
+                                        </form>
                                     @else
-                                        Document is not uploaded
+                                        <p class="text-success"><i class="fas fa-check-circle"></i> Document Submitted</p>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if ($task->document_path)
+                                        <a href="{{ route('tasks.downloadDocument', $task->id) }}" class="btn btn-secondary"><i class="fas fa-download"></i> Download</a>
+                                    @else
+                                        Not Uploaded
                                     @endif
                                 </td>
                             </tr>
@@ -48,41 +63,55 @@
             </div>
         @endif
     @else
-        <!-- Regular user view: Display only assigned tasks -->
+    <div class="d-flex justify-content-end mb-3">
+        <select id="statusFilter" class="form-control w-auto me-2">
+            <option value="">Filter by Status</option>
+            <option value="Completed">Completed</option>
+            <option value="Pending">Pending</option>
+            <option value="In Progress">In Progress</option>
+        </select>
+    </div>
+    
         @if ($tasks->isEmpty())
             <p class="text-center">No tasks assigned.</p>
         @else
             <div class="table-responsive">
-                <table class="table table-striped table-hover" id="tasksTable">
-                    <thead class="thead-dark">
+                <table class="table table-hover table-bordered" id="tasksTable">
+                    <thead class="table-header">
                         <tr>
-                            <th>Title</th>
-                            <th>Status</th>
-                            <th>Submit Document</th>
-                            <th>Document</th> <!-- New column for document -->
+                            <th class="text-center">Title</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center">Submit Document</th>
+                            <th class="text-center">Document</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($tasks as $task)
-                            <tr>
-                                <td>{{ $task->title }}</td>
-                                <td>{{ $task->status->name ?? 'No status' }}</td>
-                                <td>
+                            <tr class="table-row">
+                                <td class="text-center">{{ $task->title }}</td>
+                                <td class="text-center">{{ $task->status->name ?? 'No status' }}</td>
+                                <td class="text-center">
                                     @if ($task->assignedUser && $task->assignedUser->id === Auth::id())
-                                        <form action="{{ route('tasks.submitDocument', $task->id) }}" method="POST" enctype="multipart/form-data">
-                                            @csrf
-                                            <input type="file" name="document" accept=".pdf,.doc,.docx" class="form-control-file">
-                                            <button type="submit" class="btn btn-primary mt-2"><i class="fas fa-upload"></i> Submit Document</button>
-                                        </form>
+                                        @if (!$task->document_path)
+                                            <form action="{{ route('tasks.submitDocument', $task->id) }}" method="POST" enctype="multipart/form-data">
+                                                @csrf
+                                                <input type="file" name="document" accept=".pdf,.doc,.docx" class="form-control-file">
+                                                <button type="submit" class="btn btn-primary mt-2"><i class="fas fa-upload"></i> Submit</button>
+                                            </form>
+                                        @else
+                                            <p class="text-success"><i class="fas fa-check-circle"></i> Document Submitted</p>
+                                        @endif
                                     @else
-                                        <p>You are not assigned to this task.</p>
+                                        @if ($task->assignedUser && $task->assignedUser->id !== Auth::id())
+                                            <p>You are not assigned to this task.</p>
+                                        @endif
                                     @endif
                                 </td>
-                                <td>
+                                <td class="text-center">
                                     @if ($task->document_path)
-                                        <a href="{{ route('tasks.downloadDocument', $task->id) }}" class="btn btn-secondary"><i class="fas fa-download"></i> Download Document</a>
+                                        <a href="{{ route('tasks.downloadDocument', $task->id) }}" class="btn btn-secondary"><i class="fas fa-download"></i> Download</a>
                                     @else
-                                        Document is not uploaded
+                                        Not Uploaded
                                     @endif
                                 </td>
                             </tr>
@@ -94,6 +123,116 @@
     @endif
 </div>
 
+<!-- Custom CSS -->
+<style>
+    body {
+        background-color: #f8f9fa;
+        color: #333;
+    }
+
+    h2 {
+        color: #0056b3;
+        font-weight: bold;
+        font-size: 2rem; /* Increased font size for better visibility */
+    }
+
+    .table {
+        margin-top: 20px;
+        background-color: #ffffff;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+    }
+
+    .table-header {
+        background-color: #0056b3;
+        color: #ffffff;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #e9ecef;
+    }
+
+    th, td {
+        padding: 12px;
+        text-align: center; /* Center text in table headings and cells */
+        border-right: 1px solid #dee2e6; /* Add border to the right of cells */
+    }
+
+    th {
+        font-weight: bold;
+    }
+
+    td {
+        color: #0056b3;
+    }
+
+    .btn-primary {
+        background-color: #0056b3;
+        border: none;
+        color: #ffffff;
+    }
+
+    .btn-primary:hover {
+        background-color: #004085;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        border: none;
+        color: #ffffff;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+    }
+
+    .form-control-file {
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+    }
+
+    .container {
+        padding-bottom: 50px; /* Add space below the table */
+    }
+
+    /* Custom styles for search bar */
+    .dataTables_filter {
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+    .dataTables_filter input {
+        border-radius: 50px;
+        border: 1px solid #ced4da;
+        padding: 10px 40px 10px 20px;
+        width: 300px;
+    }
+
+    .dataTables_filter .search-icon {
+        position: absolute;
+        top: 8px;
+        right: 15px;
+        font-size: 20px;
+        color: #28a745; /* Green color */
+    }
+
+    /* Custom styles for the table rows and columns */
+    .table-row {
+        border-bottom: 1px solid #dee2e6; /* Border between rows */
+    }
+
+    /* Custom styles for the "Document Submitted" status */
+    .text-success {
+        color: #28a745; /* Green color for success */
+    }
+
+    /* Heading icon */
+    h2 i {
+        margin-left: 10px;
+        font-size: 1.5rem; /* Adjust icon size */
+    }
+</style>
+
 <!-- jQuery (necessary for DataTables) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <!-- DataTables CSS -->
@@ -102,89 +241,27 @@
 <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
 <!-- DataTables Initialization -->
 <script>
-    $(document).ready(function() {
-        $('#tasksTable').DataTable({
-            paging: true,
-            searching: true,
-            language: {
-                search: '',
-                searchPlaceholder: "Search tasks...",
-            },
-            dom: '<"d-flex justify-content-between align-items-center"f>t<"d-flex justify-content-between align-items-center"ip>',
-        });
+  var table = $('#tasksTable').DataTable({
+        paging: true, 
+        searching: true,
+        language: {
+            search: '',
+            searchPlaceholder: "Search tasks...",
+        },
+        dom: '<"d-flex justify-content-between align-items-center"f>t<"d-flex justify-content-between align-items-center"ip>',
+    });
 
-        // Add search icon to the search input
-        $('.dataTables_filter input[type="search"]').addClass('form-control').after('<i class="fas fa-search search-icon"></i>');
+    $('.dataTables_filter input[type="search"]').addClass('form-control').after('<i class="fas fa-search search-icon"></i>');
+
+    // Filter by status
+    $('#statusFilter').on('change', function() {
+        var status = $(this).val();
+        if (status) {
+            table.column(1).search(status).draw(); // Assuming status is in the second column (index 1)
+        } else {
+            table.column(1).search('').draw(); // Reset the filter
+        }
     });
 </script>
 
-<style>
-    /* Styling for the table and buttons */
-    .table-responsive {
-        margin-top: 20px;
-    }
-    
-    .table thead th {
-        background-color: #4B3832;
-        color: #FAF3E0;
-    }
-    
-    .table tbody tr:nth-child(even) {
-        background-color: #f9f9f9;
-    }
-    
-    .table tbody tr:hover {
-        background-color: #f1f1f1;
-    }
-
-    .btn-primary {
-        background-color: #D4A5A5;
-        border: none;
-    }
-    
-    .btn-primary:hover {
-        background-color: #F3CA20;
-    }
-
-    .btn-secondary {
-        background-color: #468189;
-        border: none;
-    }
-    
-    .btn-secondary:hover {
-        background-color: #356f6b;
-    }
-
-    /* Styling for the search input and icon */
-    .dataTables_filter {
-        position: relative;
-    }
-    
-    .search-icon {
-        position: absolute;
-        right: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #888;
-        pointer-events: none;
-    }
-
-    .dataTables_filter input[type="search"] {
-        padding-right: 30px;
-        border-radius: 20px;
-    }
-
-    .dataTables_wrapper .dataTables_paginate .paginate_button {
-        padding: 5px 10px;
-        margin: 0 3px;
-        border-radius: 5px;
-        background: #D4A5A5;
-        color: #fff !important;
-        text-decoration: none;
-    }
-    
-    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-        background: #F3CA20;
-    }
-</style>
 @endsection

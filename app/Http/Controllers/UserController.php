@@ -12,9 +12,20 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::with('roles')->get();
-        return view('users.index', compact('users'));
+        $users = User::all(); // Fetch all users with their names and emails
+        $roles = Role::where('name', '!=', 'superadmin')->get(); // Exclude the Superadmin role
+        return view('users.index', compact('users', 'roles'));
     }
+    
+    
+    
+    public function show($id)
+    {
+        
+        $user = User::with('tasksAssigned', 'roles')->findOrFail($id);
+        return view('users.show', compact('user'));
+    }
+    
 
     public function editPermissions($id)
     {
@@ -26,7 +37,7 @@ class UserController extends Controller
     public function userTasks()
     {
         $users = User::with('roles')->get(); // Fetch users
-        $tasks = Task::where('assigned_user_id', Auth::id())->get(); // Fetch tasks assigned to the logged-in user
+        $tasks = Task::where('assigned_to', Auth::id())->get(); // Fetch tasks assigned to the logged-in user
         return view('tasks.userTasks', compact('tasks', 'users')); // Pass both tasks and users to the view
     }
     

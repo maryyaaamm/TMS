@@ -12,22 +12,27 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Contracts\Mail\Mailable;
+use Spatie\Permission\Models\Role;
+
 class TaskController extends Controller
 {
     public function index(Request $request)
     {
         $query = Task::query();
     
-        if ($request->has('search')) {
-            $search = $request->input('search');
-            $query->where('title', 'like', "%{$search}%");
-        }
+        // if ($request->has('search') && !empty($request->input('search'))) {
+        //     $search = $request->input('search');
+        //     $query->where('title', 'like', '%' . $search . '%');
+        // }
     
-        $tasks = $query->paginate(10);
+        // Order tasks by the most recent creation date
+        $tasks = $query->orderBy('created_at', 'desc')->get();
     
         return view('tasks.index', compact('tasks'));
     }
     
+    
+   
     public function create()
 {
     $statuses = TaskStatus::all(); // Assuming you have a TaskStatus model
@@ -57,14 +62,16 @@ public function store(Request $request)
 }
 
 
+// In your TaskController
 public function edit($id)
 {
     $task = Task::findOrFail($id);
-    $statuses = TaskStatus::all(); // Assuming you have a Status model
-    $users = User::all(); // Fetch all users
+    $statuses = TaskStatus::all();
+    $users = User::where('role', '!=', 'superadmin')->get(); // Exclude superadmin
 
     return view('tasks.edit', compact('task', 'statuses', 'users'));
 }
+
 
 public function update(Request $request, $id)
 {

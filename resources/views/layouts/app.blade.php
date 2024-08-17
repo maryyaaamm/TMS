@@ -32,7 +32,7 @@
             theme: {
                 extend: {
                     colors: {
-                        'soft-pink': '#D4A5A5',
+                        // 'soft-pink': '#D4A5A5',
                         'teal': '#468189',
                         'light-beige': '#FAF3E0',
                         'dark-brown': '#4B3832',
