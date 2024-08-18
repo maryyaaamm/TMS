@@ -7,7 +7,7 @@
             <i class="fas fa-users mr-2"></i> Users
         </h1>
         <div class="overflow-x-auto">
-            <table class="w-full bg-white border border-gray-300 rounded-lg shadow-sm">
+            <table id="usersTable" class="w-full bg-white border border-gray-300 rounded-lg shadow-sm">
                 <thead class="bg-blue-200 text-blue-700 text-sm uppercase">
                     <tr>
                         <th class="px-4 py-3 border-b border-gray-300 font-medium text-left">Name</th>
@@ -34,13 +34,10 @@
                                        class="inline-block px-4 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition-colors">
                                        Edit
                                     </a>
-                                    <td class="px-4 py-3 border-b border-gray-300 text-center">
-                                        <a href="{{ route('users.show', $user->id) }}"
-                                           class="inline-block px-4 py-2 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600 transition-colors mt-2">
-                                           View
-                                        </a>
-                                    </td>
-                                    
+                                    <a href="{{ route('users.show', $user->id) }}"
+                                        class="inline-block px-4 py-2 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600 transition-colors mt-2">
+                                        View
+                                     </a>
                                 </td>
                             </tr>
                         @endif
@@ -49,9 +46,31 @@
             </table>
         </div>
     </div>
-    <!-- Optional Pagination -->
-    {{-- <div class="mt-4 flex justify-end">
-        {{ $users->links() }} <!-- If using pagination -->
-    </div> --}}
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        if (!$.fn.DataTable.isDataTable('#usersTable')) {
+            $('#usersTable').DataTable({
+                "paging": true, // Enable pagination
+                "lengthChange": false, // Disable changing the number of records per page
+                "searching": true, // Enable the search bar
+                "ordering": true, // Enable sorting
+                "info": true, // Show information text
+                "autoWidth": false, // Disable auto width calculation
+                "pageLength": 10, // Set the default number of records per page
+                "dom": '<"top"f>rt<"bottom"p><"clear">', // Customize the layout
+                "language": {
+                    "search": "_INPUT_", // Customize the search input
+                    "searchPlaceholder": "Search users...", // Add a placeholder
+                },
+                "columnDefs": [
+                    { "orderable": false, "targets": [2] } // Disable ordering on specific columns
+                ]
+            });
+        }
+    });
+</script>
+@endpush

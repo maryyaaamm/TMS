@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Contracts\Mail\Mailable;
 use Spatie\Permission\Models\Role;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\TasksReportExport;
 
 class TaskController extends Controller
 {
@@ -30,7 +32,21 @@ class TaskController extends Controller
     
         return view('tasks.index', compact('tasks'));
     }
-    
+//     public function index(Request $request)
+// {
+//     $query = Task::query();
+
+//     // Check if the search term is provided
+//     if ($request->has('search')) {
+//         $query->where('title', 'like', '%' . $request->search . '%');
+//     }
+
+//     // Paginate the results (10 items per page)
+//     $tasks = $query->paginate(10);
+
+//     return view('tasks.index', compact('tasks'));
+// }
+
     
    
     public function create()
@@ -150,10 +166,10 @@ public function dashboard()
         $pendingTasksCount = Task::where('status_id', 1)->count();
         $submittedTasks = Task::where('status_id', 2)->get();
         $inProgressTasks = Task::where('status_id', 3)->get();
-        $activeUsers = User::with('roles')->paginate(10); // Paginate active users
+        $activeUsers = User::with('roles')->get(); // Fetch all active users without pagination
     }
 
-    $tasks = Task::with('status', 'assignedUser')->paginate(10); // Paginate tasks
+    $tasks = Task::with('status', 'assignedUser')->get(); // Fetch all tasks without pagination
 
     return view('dashboard', compact(
         'tasks',
@@ -165,6 +181,7 @@ public function dashboard()
         'activeUsers'
     ));
 }
+
 
 
 public function submitDocument(Request $request, $id)
@@ -213,6 +230,14 @@ public function downloadDocument($id)
     } else {
         return redirect()->back()->with('error', 'No document uploaded');
     }
+}
+public function generateReport()
+{
+    // Fetch all users and their tasks
+    $tasks = Task::with(['assignee', 'status'])->get();
+
+    // Generate and download the Excel report
+    return Excel::download(new TasksReportExport($tasks), 'report.xlsx');
 }
 
 }

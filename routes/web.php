@@ -47,6 +47,7 @@ Route::middleware(['auth'])->group(function () {
         // Route::get('/assign/{id}', [TaskController::class, 'assign'])->name('assign'); // Consider renaming to tasks.assign for consistency
         Route::post('/assignTask', [TaskController::class, 'assignTask'])->name('assignTask');
         Route::get('/userTasks', [TaskController::class, 'userTasks'])->name('userTasks');
+        Route::get('/tasks/report', [TaskController::class, 'generateReport'])->name('reports');
 
     });
 

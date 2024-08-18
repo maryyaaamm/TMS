@@ -4,12 +4,10 @@
 <head>
     @stack('scripts')
 
-    <!-- Bootstrap JS and dependencies -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <!-- Bootstrap CSS and dependencies -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
 
     <!-- Include Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
@@ -34,20 +32,52 @@
         }
     </script>
 
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+
+    <style>
+        /* Custom DataTable pagination styling */
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            padding: 0.5em 1em;
+            margin: 0 0.1em;
+            border: 1px solid #333;
+            border-radius: 4px;
+            background-color: #000;
+            color: #fff;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background-color: #333;
+            color: #fff;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background-color: #666;
+            color: #fff;
+            border: 1px solid #666;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+            background-color: #444;
+            color: #777;
+            cursor: not-allowed;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button span {
+            display: block;
+            line-height: 1.5;
+        }
+
+        /* Custom styling for the DataTable search input */
+        .dataTables_wrapper .dataTables_filter input {
+            color: black; /* Set the text color to black */
+        }
+    </style>
 </head>
 
 <body class="font-sans flex flex-col min-h-screen bg-light-beige text-white">
-    <nav class="bg-black p-4 shadow-md fixed top-0 left-0 w-full z-50 flex justify-between items-center">
+    <nav class="bg-[#15283c] p-4 shadow-md fixed top-0 left-0 w-full z-50 flex justify-between items-center">
         <div class="logo text-blue-600 text-2xl font-bold">
-            <a href="{{ url('/') }}" class="text-blue-600 hover:text-blue-800">Task Manager</a>
+            <a href="{{ url('/') }}" class="text-white hover:text-blue-800">TASK MANAGEMENT SYSTEM</a>
         </div>
         <div class="nav-links flex items-center space-x-6">
             @auth
@@ -62,6 +92,7 @@
                         <i class="fas fa-tasks mr-2"></i> Tasks
                     </a>
                 @endif
+                
                 <form action="{{ route('logout') }}" method="POST" class="inline-block">
                     @csrf
                     <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition ease-in-out duration-200 transform hover:scale-105">
@@ -75,10 +106,10 @@
     <!-- Main content container with Flexbox -->
     <div class="flex flex-grow pt-16">
         <!-- Sidebar -->
-        <div class="text-white w-64 p-4 flex flex-col items-center min-w-max bg-[#343a40] shadow-lg">
+        <div class="text-white w-64 p-4 flex flex-col items-center min-w-max bg-[#163e4e] shadow-lg">
             <div class="mb-8 flex justify-center items-center">
                 <!-- Profile Picture or Logo -->
-                <img src="https://th.bing.com/th/id/OIP.MAleQeDj2W5A7kkxCfLMjgHaFj?w=233&h=180&c=7&r=0&o=5&pid=1.7" alt="Logo" class="w-20 h-20 rounded-full object-cover mt-4"> <!-- Added mt-4 for margin-top -->
+                <img src="https://th.bing.com/th/id/OIP.MAleQeDj2W5A7kkxCfLMjgHaFj?w=233&h=180&c=7&r=0&o=5&pid=1.7" alt="Logo" class="w-20 h-20 rounded-full object-cover mt-4">
             </div>
             
             <ul class="space-y-4 w-full">
@@ -91,7 +122,6 @@
                 @endunless
 
                 @if (Auth::user()->hasRole('superadmin'))
-                
                     <li>
                         <a href="{{ route('dashboard') }}" class="flex items-center text-white hover:text-primary hover:bg-gray-700 px-4 py-3 rounded-md text-lg transition duration-300">
                             <i class="fas fa-tachometer-alt mr-3"></i> Dashboard
@@ -113,7 +143,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="flex items-center text-white hover:text-primary hover:bg-gray-700 px-4 py-3 rounded-md text-lg transition duration-300">
+                        <a href="{{ route('tasks.reports') }}" class="flex items-center text-white hover:text-primary hover:bg-gray-700 px-4 py-3 rounded-md text-lg transition duration-300">
                             <i class="fas fa-file-alt mr-3"></i> Task Reports
                         </a>
                     </li>
@@ -127,13 +157,13 @@
         </main>
     </div>
 
-    <!-- Bootstrap JS and dependencies -->
+    <!-- JS Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
-    <!-- DataTables CSS and JS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
-    <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+    @stack('scripts')
 </body>
 
 </html>

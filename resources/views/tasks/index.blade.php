@@ -45,7 +45,8 @@
                                 <td class="text-center">{{ $task->assignedUser->name ?? 'Not assigned' }}</td>
                                 <td class="px-6 py-4 border-b border-gray-300">
                                     <a href="{{ route('tasks.edit', $task->id) }}"
-                                        class="inline-block px-4 py-2 bg-gray-700 text-white rounded-full transition-all hover:bg-gray-800 mr-2 task-assign-btn"
+                                        class="inline-block px-4 py-2 rounded-full transition-all mr-2 task-assign-btn
+                                        {{ $task->assignedUser ? 'bg-success text-white hover:bg-green-700' : 'bg-danger text-white hover:bg-red-700' }}"
                                         id="task-assign-btn-{{ $task->id }}">
                                         <i class="fas fa-edit"></i> 
                                         @if($task->assignedUser)
@@ -63,7 +64,7 @@
                                         </button>
                                     </form>
                                 </td>
-        
+                                
                                 <td class="text-center">
                                     @if ($task->document_path)
                                         <a href="{{ route('tasks.downloadDocument', $task->id) }}" class="btn btn-secondary"><i class="fas fa-download"></i> Download</a>
@@ -140,7 +141,29 @@
         font-weight: bold;
         font-size: 2rem;
     }
+    .dataTables_filter {
+            position: relative;
+            margin-bottom: 20px;
+        }
 
+        .dataTables_filter input {
+            border-radius: 50px;
+            border: 1px solid #ced4da;
+            padding: 10px 40px 10px 20px;
+            width: 300px;
+            margin-left: auto;
+            position: relative;
+        }
+
+        .dataTables_filter .search-icon {
+            position: absolute;
+            top: 50%;
+            right: 25px;
+            transform: translateY(-50%);
+            font-size: 20px;
+            color: #28a745;
+            pointer-events: none;
+        }
     .table {
         margin-top: 20px;
         background-color: #ffffff;
@@ -201,25 +224,37 @@
         color: #dee2e6
     }
 
-    .dataTables_filter {
-        position: relative;
-        margin-bottom: 20px;
-    }
+    /* Container styling */
+.dataTables_filter {
+    position: relative;
+    margin-bottom: 20px;
+}
 
-    .dataTables_filter input {
-        border-radius: 50px;
-        border: 1px solid #ced4da;
-        padding: 10px 40px 10px 20px;
-        width: 300px;
-    }
+/* Search input styling */
+.dataTables_filter input {
+    border-radius: 50px;
+    border: 1px solid #ced4da;
+    padding: 10px 40px 10px 20px;
+    width: 300px;
+    margin-left: auto;
+}
 
-    .dataTables_filter .search-icon {
-        position: absolute;
-        top: 8px;
-        right: 15px;
-        font-size: 20px;
-        color: #28a745;
-    }
+/* Search icon styling */
+/* .dataTables_filter .search-icon {
+    position: absolute;
+    top: 50%;
+    right: 25px;
+    transform: translateY(-50%);
+    font-size: 20px;
+    color: #28a745;
+    pointer-events: none; /* Ensure icon doesn't interfere with input */
+} */
+
+/* Additional adjustments */
+.dataTables_filter input.form-control {
+    padding-right: 40px; /* Make space for the icon */
+}
+
 
     .table-row {
         border-bottom: 1px solid #dee2e6;
@@ -242,33 +277,65 @@
 <!-- DataTables JS -->
 <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
 <!-- DataTables Initialization -->
-<script>
-$(document).ready(function() {
-    var table = $('#tasksTable').DataTable({
-        paging: true, 
-        searching: true,
-        order: [[0, 'desc']], // This will sort the first column (Title) in descending order by default
-        language: {
-            search: '',
-            searchPlaceholder: "Search tasks...",
-        },
-        dom: '<"d-flex justify-content-between align-items-center"f>t<"d-flex justify-content-between align-items-center"ip>',
-    });
+{{-- <script>
+   $(document).ready(function() {
+    if (!$.fn.dataTable.isDataTable('#tasksTable')) {
+        $('#tasksTable').DataTable({
+            paging: true,
+            searching: true,
+            order: [[0, 'asc']],
+            language: {
+                search: '',
+                searchPlaceholder: "Search tasks...",
+            },
+            dom: '<"d-flex justify-content-between align-items-center"f>t<"d-flex justify-content-between align-items-center"ip>',
+        });
+    }
 
+    // Adjust the search icon position within the search bar
     $('.dataTables_filter input[type="search"]').addClass('form-control').after('<i class="fas fa-search search-icon"></i>');
 
     // Filter by status
     $('#statusFilter').on('change', function() {
         var status = $(this).val();
         if (status) {
-            table.column(1).search(status).draw(); // Assuming status is in the second column (index 1)
+            $('#tasksTable').DataTable().column(1).search('^' + status + '$', true, false).draw();
         } else {
-            table.column(1).search('').draw(); // Reset the filter
+            $('#tasksTable').DataTable().column(1).search('').draw();
         }
     });
 });
 
-
-</script>
+</script> --}}
 
 @endsection
+
+@push('scripts')
+<script>
+$(document).ready(function() {
+    var table = $('#tasksTable').DataTable({
+        "paging": true,
+        "lengthChange": false,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false,
+        "pageLength": 10,
+        "dom": '<"top"f>rt<"bottom"p><"clear">',
+        "language": {
+            "search": "_INPUT_",
+            "searchPlaceholder": "Search tasks..."
+        },
+        "columnDefs": [
+            { "orderable": false, "targets": [2, 3] }
+        ]
+    });
+
+    // Custom status filter
+    $('#statusFilter').on('change', function() {
+        var filterValue = $(this).val();
+        table.column(1).search(filterValue).draw();
+    });
+});
+</script>
+@endpush

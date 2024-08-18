@@ -59,7 +59,10 @@ public function roles()
 // {
 //     return $this->hasMany(Task::class, 'assigned_user_id');
 // }
-
+public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
     public function taskAssignments()
     {
         return $this->hasMany(TaskAssignment::class);

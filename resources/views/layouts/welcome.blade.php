@@ -33,10 +33,10 @@
     <nav class="bg-black p-6">
         <div class="container mx-auto flex justify-between items-center">
             <div class="logo text-blue-600 text-2xl font-bold">
-                <a href="{{ url('/') }}" class="text-white hover:text-blue-800">EMPLOYEE TASK</a>
+                <a href="{{ url('/') }}" class="text-white hover:text-blue-800">TASK MANAGMENT SYSTEM</a>
             </div>
             <div class="flex gap-4">
-                <a href="{{ route('home') }}" class="text-white px-4 py-2 hover:text-green-500">Home</a>
+                {{-- <a href="{{ route('home') }}" class="text-white px-4 py-2 hover:text-green-500">Home</a> --}}
                 <a href="{{ route('login') }}" class="text-white px-4 py-2 hover:text-green-500">Login</a>
                 <a href="{{ route('register') }}" class="text-white px-4 py-2 hover:text-green-500">Register</a>
             </div>
@@ -55,15 +55,15 @@
     </div>
 
     <!-- About Us Section -->
-    <section class="py-16 bg-white">
+    <section class="py-16 bg-[#02394d] ">
         <div class="container mx-auto text-center md:text-left grid md:grid-cols-2 gap-8">
             <div class="flex items-center justify-center">
                 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTHsXafT1Ik2aP74cRQ8zXhGassW-r9Ldkfg&s" alt="About Us Image" class="rounded-lg shadow-lg max-w-full animate__animated animate__zoomIn">
             </div>
             <div class="md:flex md:items-center">
                 <div class="p-6">
-                    <h2 class="text-4xl font-bold text-blue-800 mb-4">About Us</h2>
-                    <p class="text-lg text-gray-700 mb-4">Employee Task Management System welcomes you to our About Us page. Employment opportunities for professionals.</p>
+                    <h2 class="text-4xl font-bold text-white mb-4">About Us</h2>
+                    <p class="text-lg text-white mb-4">Employee Task Management System welcomes you to our About Us page. Employment opportunities for professionals.</p>
                     <a href="#" class="text-green-500 font-semibold hover:underline">Learn more</a>
                 </div>
             </div>
@@ -73,9 +73,9 @@
 
 
     <!-- Testimonials Section -->
-    <section class="bg-blue-100 py-12">
+    <section class="bg-[#02394d] py-12">
         <div class="container mx-auto text-center">
-            <h2 class="text-3xl font-bold mb-8 text-blue-800">What Our Users Say</h2>
+            <h2 class="text-3xl font-bold mb-8 text-white">What Our Users Say</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <!-- Testimonial 1 -->
                 <div class="bg-white p-6 rounded-lg shadow-lg transition-transform duration-500 hover:scale-105 animate__animated animate__fadeInUp">
