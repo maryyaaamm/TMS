@@ -1,27 +1,25 @@
 <?php
-
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use App\Models\Task;
 
 class TaskUpdated extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $task;
+    public $details;
 
-    public function __construct(Task $task)
+    public function __construct($details)
     {
-        $this->task = $task;
+        $this->details = $details;
     }
 
     public function build()
     {
-        return $this->subject('Task Updated')
-                    ->view('tasks.task_updated')
-                    ->with('task', $this->task);
+        return $this->subject('New Task Created')
+                    ->view('tasks.task_created')
+                    ->with('details', $this->details);
     }
 }

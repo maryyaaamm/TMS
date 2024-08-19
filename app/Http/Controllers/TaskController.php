@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\TaskUpdated;
 use App\Models\Task;
 use App\Models\TaskAssignment;
 use App\Models\User;
@@ -15,6 +14,7 @@ use Illuminate\Contracts\Mail\Mailable;
 use Spatie\Permission\Models\Role;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\TasksReportExport;
+use App\Mail\TaskUpdated;
 
 class TaskController extends Controller
 {
@@ -58,9 +58,9 @@ public function create()
 
 
 
-
 public function store(Request $request)
 {
+    // Validate the input data
     $request->validate([
         'title' => 'required|string|max:255',
         'description' => 'required|string',
@@ -68,16 +68,31 @@ public function store(Request $request)
         'assigned_to' => 'nullable|exists:users,id',
     ]);
 
-    // Set the 'created_by' field
-    Task::create([
+    // Create the task and store it in the $task variable
+    $task = Task::create([
         'title' => $request->title,
         'description' => $request->description,
         'status_id' => $request->status_id,
         'assigned_to' => $request->assigned_to,
-        'created_by' => auth()->id(), // Here, set the currently authenticated user's ID
+        'created_by' => auth()->id(), // Set the authenticated user's ID
     ]);
 
-    return redirect()->route('tasks.index');
+    // Send email notification if the task was created successfully
+    if ($task) {
+        $details = [
+            'title' => $task->title,
+            'description' => $task->description,
+            'status' => $task->status->name, // Assuming a relationship to get status name
+            'assignedTo' => $task->assignedTo ? $task->assignedTo->name : 'None', // Assuming assignedTo relationship
+            'created_at' => $task->created_at->format('Y-m-d H:i:s'),
+        ];
+
+        // Send email to the task creator or any specified email
+        Mail::to('maryammnaveedd6@gmail.com')->send(new TaskUpdated($task)); // Pass the $task object to the Mailable
+    }
+
+    // Redirect to the task index with a success message
+    return redirect()->route('tasks.index')->with('success', 'Task created and email notification sent.');
 }
 
 
