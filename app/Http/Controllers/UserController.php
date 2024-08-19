@@ -21,10 +21,15 @@ class UserController extends Controller
     
     public function show($id)
     {
-        
+        // Fetch user along with tasks and roles
         $user = User::with('tasksAssigned', 'roles')->findOrFail($id);
-        return view('users.show', compact('user'));
+        
+        // Determine the present status (example logic: based on the latest task status)
+        $presentStatus = $user->tasksAssigned->last()?->status ? 'Active' : 'Inactive';
+        
+        return view('users.show', compact('user', 'presentStatus'));
     }
+    
     
 
     public function editPermissions($id)

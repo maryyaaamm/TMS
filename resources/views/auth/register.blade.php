@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Register</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -23,16 +23,27 @@
             max-width: 500px; /* Increased width for better visibility */
             width: 100%; /* Ensure full width within the max-width constraint */
             background-color: #FFFFFF; /* White background for form container */
-            padding: 2rem; /* Padding for form container */
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            overflow: hidden; /* Ensures the image header doesn't overflow */
         }
 
-        .form-container h2 {
-            font-size: 1.75rem; /* Font size for header */
-            color: #007BFF; /* Blue color for header */
-            margin-bottom: 1.5rem;
+         .form-header {
+          
+            background-size: cover;
+            background-position: center;
+            padding: 2rem;
             text-align: center;
+        } 
+
+        .form-header h2 {
+            font-size: 1.75rem; /* Font size for header */
+            color: #FFFFFF; /* White color for header text */
+            margin: 0;
+        }
+
+        .form-body {
+            padding: 2rem; /* Padding for form body */
         }
 
         .form-group {
@@ -98,53 +109,93 @@
         .form-forgot-password:hover {
             text-decoration: underline;
         }
+
+        /* Styling for additional links */
+        .extra-links {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+
+        .extra-links a {
+            color: #FF6347; /* Light Red for additional links */
+            text-decoration: none;
+        }
+
+        .extra-links a:hover {
+            text-decoration: underline;
+        }
+        .form-container h2 {
+            font-size: 1.75rem; /* Font size for header */
+            color: #007BFF; /* Blue color for header */
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
     <div class="form-container">
-        <h2>Register</h2>
-        <form method="POST" action="{{ route('register') }}">
-            @csrf
+        <div class="form-header">
+            <h2>Register</h2>
+        </div>
+        <div class="form-body">
+            <form method="POST" action="{{ route('register') }}">
+                @csrf
 
-            <div class="form-group">
-                <label for="email" class="form-label">Email</label>
-                <input id="email" class="form-control" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-                @error('email')
-                    <span class="form-error" role="alert">
-                        <strong>{{ $message }}</strong>
-                    </span>
-                @enderror
-            </div>
+                <!-- Name -->
+                <div class="form-group">
+                    <label for="name" class="form-label">
+                        {{ __('Name') }}
+                    </label>
+                    <input id="name" class="form-control" type="text" name="name" value="{{ old('name') }}" required autofocus autocomplete="name">
+                    @error('name')
+                        <span class="text-red-600 text-sm mt-2">{{ $message }}</span>
+                    @enderror
+                </div>
 
-            <div class="form-group">
-                <label for="password" class="form-label">Password</label>
-                <input id="password" class="form-control" type="password" name="password" required autocomplete="current-password" />
-                @error('password')
-                    <span class="form-error" role="alert">
-                        <strong>{{ $message }}</strong>
-                    </span>
-                @enderror
-            </div>
+                <!-- Email Address -->
+                <div class="form-group">
+                    <label for="email" class="form-label">
+                        {{ __('Email') }}
+                    </label>
+                    <input id="email" class="form-control" type="email" name="email" value="{{ old('email') }}" required autocomplete="username">
+                    @error('email')
+                        <span class="text-red-600 text-sm mt-2">{{ $message }}</span>
+                    @enderror
+                </div>
 
-            <div class="form-group">
-                <label for="remember_me" class="form-check-label">
-                    <input id="remember_me" type="checkbox" class="form-check-input" name="remember" />
-                    <span class="form-check-text">Remember me</span>
-                </label>
-            </div>
+                <!-- Password -->
+                <div class="form-group">
+                    <label for="password" class="form-label">
+                        {{ __('Password') }}
+                    </label>
+                    <input id="password" class="form-control" type="password" name="password" required autocomplete="new-password">
+                    @error('password')
+                        <span class="text-red-600 text-sm mt-2">{{ $message }}</span>
+                    @enderror
+                </div>
 
-            <div class="form-footer">
-                @if (Route::has('password.request'))
-                    <a class="form-forgot-password" href="{{ route('password.request') }}">
-                        Forgot your password?
+                <!-- Confirm Password -->
+                <div class="form-group">
+                    <label for="password_confirmation" class="form-label">
+                        {{ __('Confirm Password') }}
+                    </label>
+                    <input id="password_confirmation" class="form-control" type="password" name="password_confirmation" required autocomplete="new-password">
+                    @error('password_confirmation')
+                        <span class="text-red-600 text-sm mt-2">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <div class="form-footer">
+                    <a class="form-forgot-password" href="{{ route('login') }}">
+                        {{ __('Already registered?') }}
                     </a>
-                @endif
-
-                <button type="submit" class="btn btn-primary">
-Register
-                </button>
-            </div>
-        </form>
+                    <button type="submit" class="btn btn-primary">
+                        {{ __('Register') }}
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </body>
 </html>

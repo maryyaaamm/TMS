@@ -182,10 +182,10 @@
                     </button>
                 </div>
 
-                <div class="extra-links">
+                {{-- <div class="extra-links">
                     <a href="#">Home Page</a>
                     <a href="#">Contact Support</a>
-                </div>
+                </div> --}}
             </form>
         </div>
     </div>

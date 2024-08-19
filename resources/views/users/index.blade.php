@@ -30,10 +30,10 @@
                                     @endforeach
                                 </td> --}}
                                 <td class="px-4 py-3 border-b border-gray-300 text-center">
-                                    <a href="{{ route('tasks.edit', $user->id) }}"
+                                    {{-- <a href="{{ route('tasks.edit', $user->id) }}"
                                        class="inline-block px-4 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition-colors">
                                        Edit
-                                    </a>
+                                    </a> --}}
                                     <a href="{{ route('users.show', $user->id) }}"
                                         class="inline-block px-4 py-2 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600 transition-colors mt-2">
                                         View

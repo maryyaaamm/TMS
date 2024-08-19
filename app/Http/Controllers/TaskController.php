@@ -49,11 +49,14 @@ class TaskController extends Controller
 
     
    
-    public function create()
+public function create()
 {
-    $statuses = TaskStatus::all(); // Assuming you have a TaskStatus model
-    return view('tasks.create', ['statuses' => $statuses]);
+    $statuses = TaskStatus::all(); // Retrieve all task statuses
+    $users = User::all(); // Retrieve all users
+    return view('tasks.create', ['statuses' => $statuses, 'users' => $users]);
 }
+
+
 
 
 public function store(Request $request)

@@ -15,6 +15,13 @@
                     {{ $role->name }}@if(!$loop->last), @endif
                 @endforeach
             </p>
+            <p><strong>Present Status:</strong> 
+                @if($presentStatus === 'Active')
+                    <span class="bg-green-200 text-green-800 px-2 py-1 rounded-full text-xs">Active</span>
+                @else
+                    <span class="bg-red-200 text-red-800 px-2 py-1 rounded-full text-xs">Inactive</span>
+                @endif
+            </p>
         </div> --}}
 
         <div class="bg-white rounded-lg shadow-md p-6">
@@ -32,8 +39,10 @@
                             <tr class="hover:bg-gray-50 transition-colors">
                                 <td class="px-4 py-3 border-b border-gray-300">{{ $task->title }}</td>
                                 <td class="px-4 py-3 border-b border-gray-300">
-                                    @if($task->status)
+                                    @if($task->status_id == 4)
                                         <span class="bg-green-200 text-green-800 px-2 py-1 rounded-full text-xs">Completed</span>
+                                    @elseif($task->status_id == 2)
+                                        <span class="bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs">Submitted</span>
                                     @else
                                         <span class="bg-red-200 text-red-800 px-2 py-1 rounded-full text-xs">Pending</span>
                                     @endif

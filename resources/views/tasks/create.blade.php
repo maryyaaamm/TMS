@@ -24,23 +24,20 @@
             height: 300,
             skin: 'oxide-dark',
             content_css: 'dark',
-            content_style: "body { background-color: white; color: black; }", // This makes the editor background white and text black.
+            content_style: "body { background-color: white; color: black; }",
             setup: function(editor) {
-                // Ensure the content of TinyMCE is updated before form submission
                 editor.on('change', function() {
                     tinymce.triggerSave();
                 });
             }
         });
     </script>
-    
-
 </head>
 
 <body class="bg-gray-100 font-sans">
     <div class="flex min-h-screen">
         <!-- Sidebar omitted for brevity -->
-        
+
         @section('content')
 
         <!-- Main Content -->
@@ -83,6 +80,19 @@
                         class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black">
                         @foreach ($statuses as $status)
                             <option value="{{ $status->id }}">{{ $status->name }}</option>
+                        @endforeach
+                    </select>
+
+                    <!-- Assign User -->
+                    <div class="flex items-center mt-4">
+                        <i class="fas fa-user text-gray-500 mr-3"></i>
+                        <label for="assigned_user" class="block text-lg font-medium text-black mb-2">Assign User</label>
+                    </div>
+                    <select id="assigned_user" name="assigned_to" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black">
+                        <option value="">Select User</option>
+                        @foreach ($users as $user)
+                            <option value="{{ $user->id }}">{{ $user->name }}</option>
                         @endforeach
                     </select>
 

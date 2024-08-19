@@ -35,43 +35,48 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 
-    <style>
-        /* Custom DataTable pagination styling */
-        .dataTables_wrapper .dataTables_paginate .paginate_button {
-            padding: 0.5em 1em;
-            margin: 0 0.1em;
-            border: 1px solid #333;
-            border-radius: 4px;
-            background-color: #000;
-            color: #fff;
-            text-align: center;
-            cursor: pointer;
-            transition: background-color 0.3s, color 0.3s;
-        }
-        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-            background-color: #333;
-            color: #fff;
-        }
-        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-            background-color: #666;
-            color: #fff;
-            border: 1px solid #666;
-        }
-        .dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
-            background-color: #444;
-            color: #777;
-            cursor: not-allowed;
-        }
-        .dataTables_wrapper .dataTables_paginate .paginate_button span {
-            display: block;
-            line-height: 1.5;
-        }
+   <style>
+    /* Ensure these styles come after DataTable's default styles */
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        padding: 0.5em 1em;
+        margin: 0 0.1em;
+        border: 1px solid #333;
+        border-radius: 4px;
+        background-color: #000;
+        color: #fff;
+        text-align: center;
+        cursor: pointer;
+        transition: background-color 0.3s, color 0.3s;
+    }
 
-        /* Custom styling for the DataTable search input */
-        .dataTables_wrapper .dataTables_filter input {
-            color: black; /* Set the text color to black */
-        }
-    </style>
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        background-color: #333;
+        color: #fff;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+        background-color: #666;
+        color: #fff;
+        border: 1px solid #666;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+        background-color: #444;
+        color: #777;
+        cursor: not-allowed;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button span {
+        display: block;
+        line-height: 1.5;
+    }
+
+    /* Custom styling for the DataTable search input */
+    .dataTables_wrapper .dataTables_filter input {
+        color: black; /* Set the text color to black */
+    }
+</style>
+
 </head>
 
 <body class="font-sans flex flex-col min-h-screen bg-light-beige text-white">
