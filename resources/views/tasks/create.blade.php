@@ -32,6 +32,9 @@
             }
         });
     </script>
+
+    <!-- Include jQuery for AJAX -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body class="bg-gray-100 font-sans">
@@ -52,7 +55,7 @@
             <!-- Form Container -->
             <div class="w-full max-w-lg bg-white p-8 rounded-lg shadow-lg">
                 <!-- Create Task Form -->
-                <form action="{{ route('tasks.store') }}" method="POST" class="space-y-6">
+                <form id="createTaskForm" action="{{ route('tasks.store') }}" method="POST" class="space-y-6">
                     @csrf
 
                     <!-- Task Title -->
@@ -104,9 +107,42 @@
                         </button>
                     </div>
                 </form>
+
+                <!-- Success/Error Messages -->
+                <div id="responseMessage" class="mt-4 hidden text-center"></div>
             </div>
         </div>
     </div>
+
+    <!-- AJAX Logic -->
+    <script>
+        $(document).ready(function () {
+            $('#createTaskForm').on('submit', function (e) {
+                e.preventDefault(); // Prevent default form submission
+
+                let formData = $(this).serialize(); // Serialize the form data
+
+                $.ajax({
+                    url: $(this).attr('action'), // Form action URL
+                    type: 'POST',
+                    data: formData,
+                    success: function (response) {
+                        // Handle successful response
+                        $('#responseMessage').removeClass('hidden').addClass('text-green-500').text('Task created successfully!');
+                        // Optionally, reset the form or update the UI
+                        $('#createTaskForm')[0].reset();
+                        // Optionally reload TinyMCE editor
+                        tinymce.get('description').setContent('');
+                    },
+                    error: function (response) {
+                        // Handle error response
+                        $('#responseMessage').removeClass('hidden').addClass('text-red-500').text('Error creating task. Please try again.');
+                    }
+                });
+            });
+        });
+    </script>
+
 </body>
 
 </html>

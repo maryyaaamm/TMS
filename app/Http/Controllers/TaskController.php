@@ -61,39 +61,53 @@ public function create()
 public function store(Request $request)
 {
     // Validate the input data
-    $request->validate([
+    $validatedData = $request->validate([
         'title' => 'required|string|max:255',
         'description' => 'required|string',
         'status_id' => 'required|exists:task_statuses,id',
         'assigned_to' => 'nullable|exists:users,id',
     ]);
 
-    // Create the task and store it in the $task variable
-    $task = Task::create([
-        'title' => $request->title,
-        'description' => $request->description,
-        'status_id' => $request->status_id,
-        'assigned_to' => $request->assigned_to,
-        'created_by' => auth()->id(), // Set the authenticated user's ID
-    ]);
+    try {
+        // Create the task and store it in the $task variable
+        $task = Task::create([
+            'title' => $validatedData['title'],
+            'description' => $validatedData['description'],
+            'status_id' => $validatedData['status_id'],
+            'assigned_to' => $validatedData['assigned_to'],
+            'created_by' => auth()->id(), // Set the authenticated user's ID
+        ]);
 
-    // Send email notification if the task was created successfully
-    if ($task) {
-        $details = [
-            'title' => $task->title,
-            'description' => $task->description,
-            'status' => $task->status->name, // Assuming a relationship to get status name
-            'assignedTo' => $task->assignedTo ? $task->assignedTo->name : 'None', // Assuming assignedTo relationship
-            'created_at' => $task->created_at->format('Y-m-d H:i:s'),
-        ];
+        // Send email notification if the task was created successfully
+        if ($task) {
+            $details = [
+                'title' => $task->title,
+                'description' => $task->description,
+                'status' => $task->status->name, // Assuming a relationship to get status name
+                'assignedTo' => $task->assignedTo ? $task->assignedTo->name : 'None', // Assuming assignedTo relationship
+                'created_at' => $task->created_at->format('Y-m-d H:i:s'),
+            ];
 
-        // Send email to the task creator or any specified email
-        Mail::to('maryammnaveedd6@gmail.com')->send(new TaskUpdated($task)); // Pass the $task object to the Mailable
+            // Send email to the task creator or any specified email
+            Mail::to('maryammnaveedd6@gmail.com')->send(new TaskUpdated($task)); // Pass the $task object to the Mailable
+        }
+
+        // Return a JSON response for successful task creation
+        return response()->json([
+            'message' => 'Task created successfully and email notification sent.',
+            'task' => $task,
+            'details' => $details,
+        ], 201); // 201 status code for successful creation
+
+    } catch (\Exception $e) {
+        // Handle any errors during task creation or email sending
+        return response()->json([
+            'error' => 'An error occurred while creating the task. Please try again.',
+            'details' => $e->getMessage(),
+        ], 500); // 500 status code for server error
     }
-
-    // Redirect to the task index with a success message
-    return redirect()->route('tasks.index')->with('success', 'Task created and email notification sent.');
 }
+
 
 
 // In your TaskController
