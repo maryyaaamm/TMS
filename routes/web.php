@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Contracts\Mail\Mailable;
 use App\Models\Task;
 
+Route::post('/tasks/track-time/{task}', [TaskController::class, 'trackTime'])->name('tasks.trackTime');
+
 Route::get('/test-email', function () {
     $task = Task::find(1); // Adjust as needed
 

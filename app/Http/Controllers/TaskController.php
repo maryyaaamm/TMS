@@ -271,5 +271,12 @@ public function generateReport()
     // Generate and download the Excel report
     return Excel::download(new TasksReportExport($tasks), 'report.xlsx');
 }
+public function trackTime(Request $request, Task $task)
+{
+    $task->total_time += $request->input('total_time');
+    $task->save();
+
+    return response()->json(['message' => 'Time tracked successfully!']);
+}
 
 }

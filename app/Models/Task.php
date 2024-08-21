@@ -16,7 +16,7 @@ class Task extends Model
         'created_by',
         'assigned_to',
         'document_path', // Add this field
-
+        'total_time',
     ];
 
     // Relationships
@@ -45,5 +45,4 @@ class Task extends Model
     {
         return $this->belongsTo(User::class, 'assigned_to');
     }
-    
 }
