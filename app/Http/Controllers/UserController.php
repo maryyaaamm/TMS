@@ -12,9 +12,25 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::with('roles')->get();
-        return view('users.index', compact('users'));
+        $users = User::all(); // Fetch all users with their names and emails
+        $roles = Role::where('name', '!=', 'superadmin')->get(); // Exclude the Superadmin role
+        return view('users.index', compact('users', 'roles'));
     }
+    
+    
+    
+    public function show($id)
+    {
+        // Fetch user along with tasks and roles
+        $user = User::with('tasksAssigned', 'roles')->findOrFail($id);
+        
+        // Determine the present status (example logic: based on the latest task status)
+        $presentStatus = $user->tasksAssigned->last()?->status ? 'Active' : 'Inactive';
+        
+        return view('users.show', compact('user', 'presentStatus'));
+    }
+    
+    
 
     public function editPermissions($id)
     {
@@ -25,9 +41,11 @@ class UserController extends Controller
 
     public function userTasks()
     {
-        $tasks = Task::where('assigned_user_id', Auth::id())->get();
-        return view('tasks.userTasks', compact('tasks'));
+        $users = User::with('roles')->get(); // Fetch users
+        $tasks = Task::where('assigned_to', Auth::id())->get(); // Fetch tasks assigned to the logged-in user
+        return view('tasks.userTasks', compact('tasks', 'users')); // Pass both tasks and users to the view
     }
+    
 
     public function updatePermissions(Request $request, $id)
     {
