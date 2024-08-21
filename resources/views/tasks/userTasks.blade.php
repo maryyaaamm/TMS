@@ -143,11 +143,12 @@
                                     </td>
 
                                     <td class="text-center">
-                                        <button id="startTracking-{{ $task->id }}"
-                                            class="btn btn-success start-tracking-btn">Start Tracking</button>
-                                        <button id="stopTracking-{{ $task->id }}"
-                                            class="btn btn-danger stop-tracking-btn" disabled>Stop Tracking</button>
+                                        <button id="trackingButton-{{ $task->id }}"
+                                            class="btn btn-success tracking-btn" data-tracking="false">
+                                            Start Tracking
+                                        </button>
                                     </td>
+
                                     <td class="text-center">
                                         {{ gmdate('H:i:s', $task->total_time) }} <!-- Total time from the database -->
                                     </td>
@@ -284,133 +285,128 @@
     <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
 
     <script>
-    let startTimes = {};
-    let intervals = {};
-    let totalTimes = {}; // Store total time spent in a persistent object
-
-    const updateInterval = 1000; // Update every 1000 milliseconds (1 second)
-
-    // Load stored start times and total times from local storage
-    if (localStorage.getItem('startTimes')) {
-        startTimes = JSON.parse(localStorage.getItem('startTimes'));
-    }
-
-    if (localStorage.getItem('totalTimes')) {
-        totalTimes = JSON.parse(localStorage.getItem('totalTimes'));
-    }
-
-    // Start tracking time
-    document.querySelectorAll('.start-tracking-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const taskId = this.id.split('-')[1];
-            if (startTimes[taskId]) return; // Avoid starting a new interval if one is already running
-
-            startTimes[taskId] = new Date().getTime(); // Store start time as a timestamp
-            localStorage.setItem('startTimes', JSON.stringify(startTimes)); // Save to local storage
-
-            intervals[taskId] = setInterval(() => updateTimeDisplay(taskId), updateInterval); // Start updating with setInterval
-            document.getElementById('stopTracking-' + taskId).disabled = false;
-            this.disabled = true;
-        });
-    });
-
-    // Stop tracking time
-    document.querySelectorAll('.stop-tracking-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const taskId = this.id.split('-')[1];
-            stopTracking(taskId);
-        });
-    });
-
-    function updateTimeDisplay(taskId) {
-        if (!startTimes[taskId]) return; // If no start time, exit the function
-
-        const now = new Date().getTime();
-        const startTime = startTimes[taskId];
-        const elapsedTime = Math.floor((now - startTime) / 1000); // Time in seconds
-
-        const previousTime = totalTimes[taskId] || 0;
-        const totalTime = previousTime + elapsedTime;
-
-        const timeSpentCell = document.querySelector(`#tasksTable tbody tr td.time-spent[data-task-id="${taskId}"]`);
-        if (timeSpentCell) {
-            timeSpentCell.setAttribute('data-time', totalTime);
-            timeSpentCell.textContent = formatTime(totalTime);
+        let startTimes = {};
+        let intervals = {};
+        let totalTimes = {}; // Store the total time from the database
+    
+        const updateInterval = 1000;
+    
+        // Retrieve stored values from localStorage if available
+        if (localStorage.getItem('startTimes')) {
+            startTimes = JSON.parse(localStorage.getItem('startTimes'));
         }
-    }
-
-    function formatTime(seconds) {
-        const hours = Math.floor(seconds / 3600);
-        const minutes = Math.floor((seconds % 3600) / 60);
-        const secs = seconds % 60;
-        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-    }
-
-    function stopTracking(taskId) {
-        if (!startTimes[taskId]) return; // No start time found, exit the function
-
-        clearInterval(intervals[taskId]); // Stop the interval
-
-        const now = new Date().getTime();
-        const startTime = startTimes[taskId];
-        const elapsedTime = Math.floor((now - startTime) / 1000); // Time in seconds
-
-        const previousTime = totalTimes[taskId] || 0;
-        const totalTime = previousTime + elapsedTime;
-        totalTimes[taskId] = totalTime; // Save total time spent
-        localStorage.setItem('totalTimes', JSON.stringify(totalTimes)); // Save to local storage
-
-        const timeSpentCell = document.querySelector(`#tasksTable tbody tr td.time-spent[data-task-id="${taskId}"]`);
-        if (timeSpentCell) {
-            timeSpentCell.setAttribute('data-time', totalTime);
-            timeSpentCell.textContent = formatTime(totalTime);
+    
+        if (localStorage.getItem('totalTimes')) {
+            totalTimes = JSON.parse(localStorage.getItem('totalTimes'));
         }
-
-        // Save time to the database
-        saveTimeToDatabase(totalTime, taskId);
-
-        // Reset start time and interval
-        delete startTimes[taskId];
-        delete intervals[taskId];
-        localStorage.setItem('startTimes', JSON.stringify(startTimes)); // Update local storage
-
-        document.getElementById('startTracking-' + taskId).disabled = false;
-        document.getElementById('stopTracking-' + taskId).disabled = true;
-    }
-
-    // Save time to the database
-    function saveTimeToDatabase(time, taskId) {
-        return $.ajax({
-            url: '{{ url('/tasks/track-time') }}/' + taskId,
-            method: 'POST',
-            data: {
-                _token: '{{ csrf_token() }}',
-                total_time: time,
-            }
+    
+        document.querySelectorAll('.tracking-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const taskId = this.id.split('-')[1];
+                if (!startTimes[taskId]) {
+                    startTracking(taskId, this);
+                } else {
+                    stopTracking(taskId, this);
+                }
+            });
         });
-    }
-
-    // Check if there's any active tracking session on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        Object.keys(startTimes).forEach(taskId => {
-            if (startTimes[taskId]) {
-                intervals[taskId] = setInterval(() => updateTimeDisplay(taskId), updateInterval);
-                document.getElementById('startTracking-' + taskId).disabled = true;
-                document.getElementById('stopTracking-' + taskId).disabled = false;
+    
+        function startTracking(taskId, button) {
+            startTimes[taskId] = new Date().getTime();
+            localStorage.setItem('startTimes', JSON.stringify(startTimes));
+    
+            intervals[taskId] = setInterval(() => updateTimeDisplay(taskId), updateInterval);
+    
+            button.textContent = 'Stop Tracking';
+            button.classList.remove('btn-success');
+            button.classList.add('btn-danger');
+        }
+    
+        function stopTracking(taskId, button) {
+            clearInterval(intervals[taskId]);
+    
+            const now = new Date().getTime();
+            const startTime = startTimes[taskId];
+            const sessionTime = Math.floor((now - startTime) / 1000); // Time for the current session
+    
+            const previousTime = totalTimes[taskId] || 0;
+            const totalTime = previousTime + sessionTime; // Correctly add session time to the previous total
+            totalTimes[taskId] = totalTime;
+            localStorage.setItem('totalTimes', JSON.stringify(totalTimes));
+    
+            const timeSpentCell = document.querySelector(`#tasksTable tbody tr td.time-spent[data-task-id="${taskId}"]`);
+            if (timeSpentCell) {
+                timeSpentCell.setAttribute('data-time', totalTime);
+                timeSpentCell.textContent = formatTime(totalTime);
             }
-        });
-    });
-
-    // Stop tracking time when the form is submitted
-    document.querySelector('form').addEventListener('submit', function(event) {
-        Object.keys(startTimes).forEach(taskId => {
-            if (startTimes[taskId]) {
-                stopTracking(taskId); // Stop tracking for all active sessions
+    
+            saveSessionTimeToDatabase(sessionTime, taskId);
+    
+            delete startTimes[taskId];
+            delete intervals[taskId];
+            localStorage.setItem('startTimes', JSON.stringify(startTimes));
+    
+            button.textContent = 'Start Tracking';
+            button.classList.remove('btn-danger');
+            button.classList.add('btn-success');
+        }
+    
+        function updateTimeDisplay(taskId) {
+            if (!startTimes[taskId]) return;
+    
+            const now = new Date().getTime();
+            const startTime = startTimes[taskId];
+            const elapsedTime = Math.floor((now - startTime) / 1000);
+    
+            const previousTime = totalTimes[taskId] || 0;
+            const totalTime = previousTime + elapsedTime;
+    
+            const timeSpentCell = document.querySelector(`#tasksTable tbody tr td.time-spent[data-task-id="${taskId}"]`);
+            if (timeSpentCell) {
+                timeSpentCell.setAttribute('data-time', totalTime);
+                timeSpentCell.textContent = formatTime(totalTime);
             }
+        }
+    
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+    
+        function saveSessionTimeToDatabase(sessionTime, taskId) {
+            return $.ajax({
+                url: '{{ url('/tasks/track-time') }}/' + taskId,
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    session_time: sessionTime,
+                }
+            });
+        }
+    
+        document.addEventListener('DOMContentLoaded', function() {
+            Object.keys(startTimes).forEach(taskId => {
+                if (startTimes[taskId]) {
+                    intervals[taskId] = setInterval(() => updateTimeDisplay(taskId), updateInterval);
+                    const button = document.getElementById('trackingButton-' + taskId);
+                    button.textContent = 'Stop Tracking';
+                    button.classList.remove('btn-success');
+                    button.classList.add('btn-danger');
+                }
+            });
         });
-    });
-</script>
-
+    
+        document.querySelector('form').addEventListener('submit', function(event) {
+            Object.keys(startTimes).forEach(taskId => {
+                if (startTimes[taskId]) {
+                    stopTracking(taskId, document.getElementById('trackingButton-' + taskId));
+                }
+            });
+        });
+    </script>
+    
 @endsection
 @push('scripts')
     <script>
