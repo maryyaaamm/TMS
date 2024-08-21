@@ -28,6 +28,8 @@
                             <th class="text-center">Assigned To</th>
                             <th class="text-center">Submit Document</th>
                             <th class="text-center">Document</th>
+                            <th class="text-center">Total Time</th> <!-- New column -->
+
                         </tr>
                     </thead>
                     
@@ -71,6 +73,9 @@
                                     @else
                                         Not Uploaded
                                     @endif
+                                </td>
+                                <td class="text-center">
+                                    {{ gmdate('H:i:s', $task->total_time) }} <!-- Total time from the database -->
                                 </td>
                             </tr>
                         @endforeach
@@ -276,37 +281,8 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
 <!-- DataTables JS -->
 <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
-<!-- DataTables Initialization -->
-{{-- <script>
-   $(document).ready(function() {
-    if (!$.fn.dataTable.isDataTable('#tasksTable')) {
-        $('#tasksTable').DataTable({
-            paging: true,
-            searching: true,
-            order: [[0, 'asc']],
-            language: {
-                search: '',
-                searchPlaceholder: "Search tasks...",
-            },
-            dom: '<"d-flex justify-content-between align-items-center"f>t<"d-flex justify-content-between align-items-center"ip>',
-        });
-    }
 
-    // Adjust the search icon position within the search bar
-    $('.dataTables_filter input[type="search"]').addClass('form-control').after('<i class="fas fa-search search-icon"></i>');
 
-    // Filter by status
-    $('#statusFilter').on('change', function() {
-        var status = $(this).val();
-        if (status) {
-            $('#tasksTable').DataTable().column(1).search('^' + status + '$', true, false).draw();
-        } else {
-            $('#tasksTable').DataTable().column(1).search('').draw();
-        }
-    });
-});
-
-</script> --}}
 
 @endsection
 

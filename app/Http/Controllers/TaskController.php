@@ -271,5 +271,21 @@ public function generateReport()
     // Generate and download the Excel report
     return Excel::download(new TasksReportExport($tasks), 'report.xlsx');
 }
+public function trackTime(Request $request, $taskId)
+{
+    $task = Task::findOrFail($taskId);
+
+    // Retrieve the session time from the request
+    $sessionTime = $request->input('session_time');
+
+    // Add the session time to the existing total time
+    $task->total_time += $sessionTime;
+
+    // Save the updated total time back to the database
+    $task->save();
+
+    return response()->json(['success' => true]);
+}
+
 
 }
