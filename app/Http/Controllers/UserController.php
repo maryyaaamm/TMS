@@ -36,14 +36,14 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
         $roles = Role::all();
-        return view('users.editPermissions', compact('user', 'roles'));
+        return view('users.edit_permissions', compact('user', 'roles'));
     }
 
     public function userTasks()
     {
         $users = User::with('roles')->get(); // Fetch users
         $tasks = Task::where('assigned_to', Auth::id())->get(); // Fetch tasks assigned to the logged-in user
-        return view('tasks.userTasks', compact('tasks', 'users')); // Pass both tasks and users to the view
+        return view('tasks.user_tasks', compact('tasks', 'users')); // Pass both tasks and users to the view
     }
     
 

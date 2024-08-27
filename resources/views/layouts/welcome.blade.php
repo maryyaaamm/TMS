@@ -17,6 +17,7 @@
     <style>
         body {
             font-family: 'Figtree', sans-serif;
+            background-color: #f8f9fa;
         }
 
         .carousel-background {
@@ -24,44 +25,70 @@
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
+            position: relative;
+        }
+
+        .carousel-background::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .carousel-content {
+            position: relative;
+            z-index: 10;
+        }
+
+        .navbar a:hover {
+            color: #38bdf8; /* Tailwind's light blue color */
+            transition: color 0.3s ease-in-out;
+        }
+
+        .about-image:hover {
+            transform: scale(1.05);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .footer-social a:hover {
+            color: #38bdf8;
+            transform: scale(1.1);
+            transition: transform 0.3s ease-in-out;
         }
     </style>
 </head>
 <body class="bg-white text-blue-800 flex flex-col min-h-screen">
   
     <!-- Navbar -->
-    <nav class="bg-black p-6">
+    <nav class="bg-black p-6 navbar">
         <div class="container mx-auto flex justify-between items-center">
             <div class="logo text-blue-600 text-2xl font-bold">
-                <a href="{{ url('/') }}" class="text-white hover:text-blue-800">TASK MANAGMENT SYSTEM</a>
+                <a href="{{ url('/') }}" class="text-white hover:text-blue-400">TASK MANAGEMENT SYSTEM</a>
             </div>
             <div class="flex gap-4">
-                {{-- <a href="{{ route('home') }}" class="text-white px-4 py-2 hover:text-green-500">Home</a> --}}
-                <a href="{{ route('login') }}" class="text-white px-4 py-2 hover:text-green-500">Login</a>
-                <a href="{{ route('register') }}" class="text-white px-4 py-2 hover:text-green-500">Register</a>
-            </div>
+                <a href="{{ route('login') }}" class="text-white px-4 py-2 hover:text-blue-400">Login</a>
+                <a href="{{ route('register') }}" class="text-white px-4 py-2 hover:text-blue-400">Register</a>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
     <div class="carousel-background h-screen flex items-center justify-center text-center text-white relative animate__animated animate__fadeIn">
-        <div class="absolute inset-0 bg-black opacity-50"></div>
-        <div class="relative z-10">
-            <h1 class="text-6xl font-bold">Improving Workplace <span class="text-green-500">Productivity</span></h1>
-            <p class="mt-4 text-lg">Hire. Train. Retain.</p>
-            <a href="#" class="mt-6 inline-block px-8 py-3 bg-green-500 text-white font-semibold rounded-lg shadow-lg hover:bg-green-400 transition duration-300 transform hover:scale-105">Read More</a>
+        <div class="carousel-content">
+            <h1 class="text-6xl font-bold animate__animated animate__fadeInDown">Improving Workplace <span class="text-green-500">Productivity</span></h1>
+            <p class="mt-4 text-lg animate__animated animate__fadeInUp">Hire. Train. Retain.</p>
+            <a href="#" class="mt-6 inline-block px-8 py-3 bg-green-500 text-white font-semibold rounded-lg shadow-lg hover:bg-green-400 transition duration-300 transform hover:scale-105 animate__animated animate__fadeInUp animate__delay-1s">Read More</a>
         </div>
     </div>
 
     <!-- About Us Section -->
-    <section class="py-16 bg-[#02394d] ">
+    <section class="py-16 bg-[#02394d]">
         <div class="container mx-auto text-center md:text-left grid md:grid-cols-2 gap-8">
             <div class="flex items-center justify-center">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTHsXafT1Ik2aP74cRQ8zXhGassW-r9Ldkfg&s" alt="About Us Image" class="rounded-lg shadow-lg max-w-full animate__animated animate__zoomIn">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTHsXafT1Ik2aP74cRQ8zXhGassW-r9Ldkfg&s" alt="About Us Image" class="rounded-lg shadow-lg max-w-full animate__animated animate__zoomIn about-image">
             </div>
             <div class="md:flex md:items-center">
-                <div class="p-6">
+                <div class="p-6 animate__animated animate__fadeInRight">
                     <h2 class="text-4xl font-bold text-white mb-4">About Us</h2>
                     <p class="text-lg text-white mb-4">Employee Task Management System welcomes you to our About Us page. Employment opportunities for professionals.</p>
                     <a href="#" class="text-green-500 font-semibold hover:underline">Learn more</a>
@@ -70,12 +97,10 @@
         </div>
     </section>
 
-
-
     <!-- Testimonials Section -->
     <section class="bg-[#02394d] py-12">
         <div class="container mx-auto text-center">
-            <h2 class="text-3xl font-bold mb-8 text-white">What Our Users Say</h2>
+            <h2 class="text-3xl font-bold mb-8 text-white animate__animated animate__fadeInUp">What Our Users Say</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <!-- Testimonial 1 -->
                 <div class="bg-white p-6 rounded-lg shadow-lg transition-transform duration-500 hover:scale-105 animate__animated animate__fadeInUp">
@@ -105,7 +130,7 @@
             <div class="text-center md:text-left">
                 <p>&copy; 2024 Employee Task Management System. All rights reserved.</p>
             </div>
-            <div class="flex justify-center md:justify-end gap-4 mt-4 md:mt-0">
+            <div class="flex justify-center md:justify-end gap-4 mt-4 md:mt-0 footer-social">
                 <a href="#" class="text-white hover:text-blue-500"><i class="fab fa-facebook-f"></i></a>
                 <a href="#" class="text-white hover:text-blue-500"><i class="fab fa-twitter"></i></a>
                 <a href="#" class="text-white hover:text-blue-500"><i class="fab fa-linkedin-in"></i></a>

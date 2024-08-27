@@ -50,6 +50,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/assignTask', [TaskController::class, 'assignTask'])->name('assignTask');
         Route::get('/userTasks', [TaskController::class, 'userTasks'])->name('userTasks');
         Route::get('/tasks/report', [TaskController::class, 'generateReport'])->name('reports');
+        Route::post('/tasks/filter-by-date', [TaskController::class, 'filterByDate'])->name('tasks.filterByDate');
+
 
     });
 

@@ -111,25 +111,26 @@
                                 <tr class="table-row">
                                     <td class="text-center">{{ $task->title }}</td>
                                     <td class="text-center">{{ $task->status->name ?? 'No status' }}</td>
-                                    <td class="text-center">
+                                    <td class="text-center" style="padding: 15px; vertical-align: middle; width: 400px;"> <!-- Adjust width as needed -->
                                         @if ($task->assignedUser && $task->assignedUser->id === Auth::id())
                                             @if (!$task->document_path)
-                                                <form action="{{ route('tasks.submitDocument', $task->id) }}"
-                                                    method="POST" enctype="multipart/form-data">
+                                                <form action="{{ route('tasks.submitDocument', $task->id) }}" method="POST" enctype="multipart/form-data" style="display: flex; align-items: center; gap: 10px;">
                                                     @csrf
-                                                    <input type="file" name="document" accept=".pdf,.doc,.docx"
-                                                        class="form-control-file">
-                                                    <button type="submit" class="btn btn-primary mt-2"><i
-                                                            class="fas fa-upload"></i> Submit</button>
+                                                    <input type="file" name="document" accept=".pdf,.doc,.docx" class="form-control-file" style="padding: 10px; border-radius: 5px; border: 1px solid #ccc; flex: 1;">
+                                                    <button type="submit" class="btn btn-primary" style="padding: 8px 15px; font-weight: bold; display: flex; align-items: center;">
+                                                        <i class="fas fa-paper-plane" style="margin-right: 5px;"></i> Submit
+                                                    </button>
                                                 </form>
                                             @else
-                                                <p class="text-success"><i class="fas fa-check-circle"></i> Document
-                                                    Submitted</p>
+                                                <p class="text-success" style="margin: 0; padding: 10px; font-weight: bold; display: flex; align-items: center; justify-content: center;">
+                                                    <i class="fas fa-check-circle" style="margin-right: 5px;"></i> Document Submitted
+                                                </p>
                                             @endif
                                         @else
-                                            <p>You are not assigned to this task.</p>
+                                            <p style="margin: 0; padding: 10px; color: #555;">You are not assigned to this task.</p>
                                         @endif
                                     </td>
+                                    
                                     <td class="text-center">
                                         @if ($task->document_path)
                                             <a href="{{ route('tasks.downloadDocument', $task->id) }}"

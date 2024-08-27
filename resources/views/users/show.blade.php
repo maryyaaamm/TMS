@@ -25,9 +25,8 @@
         </div> --}}
 
         <div class="bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-blue-700 text-2xl font-semibold mb-4">Assigned Tasks</h2>
             <div class="overflow-x-auto">
-                <table class="w-full bg-white border border-gray-300 rounded-lg shadow-sm">
+                <table id="assignedTasksTable" class="w-full bg-white border border-gray-300 rounded-lg shadow-sm">
                     <thead class="bg-blue-200 text-blue-700 text-sm uppercase">
                         <tr>
                             <th class="px-4 py-3 border-b border-gray-300 font-medium text-left">Task Name</th>
@@ -61,3 +60,29 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        if (!$.fn.DataTable.isDataTable('#assignedTasksTable')) {
+            $('#assignedTasksTable').DataTable({
+                "paging": true, // Enable pagination
+                "lengthChange": false, // Disable changing the number of records per page
+                "searching": true, // Enable the search bar
+                "ordering": true, // Enable sorting
+                "info": true, // Show information text
+                "autoWidth": false, // Disable auto width calculation
+                "pageLength": 10, // Set the default number of records per page
+                "dom": '<"top"f>rt<"bottom"p><"clear">', // Customize the layout
+                "language": {
+                    "search": "_INPUT_", // Customize the search input
+                    "searchPlaceholder": "Search tasks...", // Add a placeholder
+                },
+                "columnDefs": [
+                    { "orderable": false, "targets": [1] } // Disable ordering on the Status column
+                ]
+            });
+        }
+    });
+</script>
+@endpush

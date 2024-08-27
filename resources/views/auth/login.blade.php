@@ -17,6 +17,10 @@
             justify-content: center;
             min-height: 100vh;
             margin: 0;
+            background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTUi8SP4OMCoPSq1kUaWTIu8FQdkKlCMiFMwA&s') no-repeat center center fixed;
+            background-size: cover; /* Cover the entire background */
+            background-position: center; /* Center the image */
+            background-repeat: no-repeat; /* Prevent the image from repeating */
         }
 
         .form-container {
@@ -28,17 +32,16 @@
             overflow: hidden; /* Ensures the image header doesn't overflow */
         }
 
-         .form-header {
-          
+        .form-header {
             background-size: cover;
             background-position: center;
             padding: 2rem;
             text-align: center;
-        } 
+        }
 
         .form-header h2 {
             font-size: 1.75rem; /* Font size for header */
-            color: #FFFFFF; /* White color for header text */
+            color: #007BFF; /* Blue color for header */
             margin: 0;
         }
 
@@ -125,6 +128,7 @@
         .extra-links a:hover {
             text-decoration: underline;
         }
+
         .form-container h2 {
             font-size: 1.75rem; /* Font size for header */
             color: #007BFF; /* Blue color for header */
@@ -137,7 +141,6 @@
     <div class="form-container">
         <div class="form-container">
             <h2>Login</h2>
-            
         </div>
         <div class="form-body">
             <form method="POST" action="{{ route('login') }}">
@@ -181,11 +184,6 @@
                         Log in
                     </button>
                 </div>
-
-                {{-- <div class="extra-links">
-                    <a href="#">Home Page</a>
-                    <a href="#">Contact Support</a>
-                </div> --}}
             </form>
         </div>
     </div>

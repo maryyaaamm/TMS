@@ -3,14 +3,23 @@
 
 <head>
     @stack('scripts')
+<!-- Include Date Range Picker CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+<!-- Include Date Range Picker JS -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 
     <!-- Bootstrap CSS and dependencies -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- Include Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -98,12 +107,33 @@
                     </a>
                 @endif
                 
-                <form action="{{ route('logout') }}" method="POST" class="inline-block">
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="inline-block">
                     @csrf
-                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition ease-in-out duration-200 transform hover:scale-105">
+                    <button type="button" id="logout-button" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition ease-in-out duration-200 transform hover:scale-105">
                         <i class="fas fa-sign-out-alt mr-2"></i> Logout
                     </button>
                 </form>
+                
+                <script>
+                    document.getElementById('logout-button').addEventListener('click', function(event) {
+                        event.preventDefault();
+                        Swal.fire({
+                            title: 'Are you sure?',
+                            text: "You won't be able to revert this!",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Yes, logout!',
+                            cancelButtonText: 'Cancel'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                document.getElementById('logout-form').submit();
+                            }
+                        });
+                    });
+                </script>
+                
             @endauth
         </div>
     </nav>
@@ -117,13 +147,21 @@
                 <img src="https://th.bing.com/th/id/OIP.MAleQeDj2W5A7kkxCfLMjgHaFj?w=233&h=180&c=7&r=0&o=5&pid=1.7" alt="Logo" class="w-20 h-20 rounded-full object-cover mt-4">
             </div>
             
+
             <ul class="space-y-4 w-full">
                 @unless (Auth::user()->hasRole('superadmin'))
+                <li>
+                    <a href="{{ route('dashboard') }}" class="flex items-center text-white hover:text-[#007bff] hover:bg-[#495057] px-4 py-3 rounded-md text-lg transition ease-in-out duration-300 transform hover:scale-105">
+                        <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
+                    </a>
+                </li>
+            
                     <li>
                         <a href="{{ route('tasks.userTasks') }}" class="flex items-center text-white hover:text-[#007bff] hover:bg-[#495057] px-4 py-3 rounded-md text-lg transition ease-in-out duration-300 transform hover:scale-105">
-                            <i class="fas fa-home mr-3"></i> Your Tasks
+                            <i class="fas fa-tasks mr-3"></i> Your Tasks
                         </a>
                     </li>
+                    
                 @endunless
 
                 @if (Auth::user()->hasRole('superadmin'))

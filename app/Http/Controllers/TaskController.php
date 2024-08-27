@@ -16,6 +16,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\TasksReportExport;
 use App\Mail\TaskUpdated;
 
+
 class TaskController extends Controller
 {
     public function index(Request $request)
@@ -177,7 +178,7 @@ public function update(Request $request, $id)
 public function userTasks()
 {
     $tasks = Task::where('assigned_to', Auth::id())->with('status')->get();
-    return view('tasks.userTasks', compact('tasks'));
+    return view('tasks.user_tasks', compact('tasks'));
 }
 
 
@@ -285,6 +286,25 @@ public function trackTime(Request $request, $taskId)
     $task->save();
 
     return response()->json(['success' => true]);
+}
+
+public function filterByDate(Request $request)
+{
+    $startDate = $request->startDate;
+    $endDate = $request->endDate;
+
+    // Filter tasks based on the date range
+    $tasks = Task::whereBetween('created_at', [$startDate, $endDate])->get();
+
+    $tasksCount = $tasks->count();
+    $pendingTasksCount = $tasks->where('status_id', 2)->count();
+    $completedTasksCount = $tasks->where('status_id', 4)->count();
+
+    return response()->json([
+        'tasksCount' => $tasksCount,
+        'pendingTasksCount' => $pendingTasksCount,
+        'completedTasksCount' => $completedTasksCount,
+    ]);
 }
 
 

@@ -57,14 +57,34 @@
                                             Assign Tasks
                                         @endif
                                     </a>
-                                    <form action="{{ route('tasks.destroy', $task->id) }}" method="POST" class="inline-block">
+                                    <form id="delete-form-{{ $task->id }}" action="{{ route('tasks.destroy', $task->id) }}" method="POST" class="inline-block">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit"
-                                            class="px-4 py-2 bg-red-600 text-white rounded-full transition-all hover:bg-red-700">
+                                        <button type="button" id="delete-button-{{ $task->id }}" class="px-4 py-2 bg-red-600 text-white rounded-full transition-all hover:bg-red-700">
                                             <i class="fas fa-trash-alt"></i> Delete
                                         </button>
                                     </form>
+                                    
+                                    <script>
+                                        document.getElementById('delete-button-{{ $task->id }}').addEventListener('click', function(event) {
+                                            event.preventDefault();
+                                            Swal.fire({
+                                                title: 'Are you sure?',
+                                                text: "This action cannot be undone!",
+                                                icon: 'warning',
+                                                showCancelButton: true,
+                                                confirmButtonColor: '#d33',
+                                                cancelButtonColor: '#3085d6',
+                                                confirmButtonText: 'Yes, delete it!',
+                                                cancelButtonText: 'Cancel'
+                                            }).then((result) => {
+                                                if (result.isConfirmed) {
+                                                    document.getElementById('delete-form-{{ $task->id }}').submit();
+                                                }
+                                            });
+                                        });
+                                    </script>
+                                    
                                 </td>
                                 
                                 <td class="text-center">
