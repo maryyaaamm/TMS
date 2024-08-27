@@ -13,7 +13,6 @@
                     <option value="">Filter by Status</option>
                     <option value="Completed">Completed</option>
                     <option value="Pending">Pending</option>
-                    <option value="In Progress">In Progress</option>
                 </select>
             </div>
 
@@ -85,7 +84,6 @@
                     <option value="">Filter by Status</option>
                     <option value="Completed">Completed</option>
                     <option value="Pending">Pending</option>
-                    <option value="In Progress">In Progress</option>
                 </select>
             </div>
 

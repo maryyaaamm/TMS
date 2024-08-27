@@ -18,7 +18,7 @@
             <label for="status">Status</label>
             <select class="form-control" id="status" name="status_id">
                 @foreach($statuses as $status)
-                    <option value="{{ $status->id }}" {{ $task->status_id == $status->id ? 'selected' : '' }}>{{ $status->name }}</option>
+                    <option value="{{ $status->id }}" {{ $task->status_id == 1 ? 'selected' : '' }}>{{ $status->name }}</option>
                 @endforeach
             </select>
         </div>

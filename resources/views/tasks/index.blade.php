@@ -12,7 +12,7 @@
                 <option value="">Filter by Status</option>
                 <option value="Completed">Completed</option>
                 <option value="Pending">Pending</option>
-                <option value="In Progress">In Progress</option>
+                <option value="submitted">submitted</option>
             </select>
         </div>
         
@@ -39,8 +39,12 @@
                                 <td class="text-center">{{ $task->title }}</td>
                                 <td class="text-center">
                                     @if (Auth::user()->hasRole('superadmin'))
-                                        {{ $task->status->name === 'submitted' ? 'In Progress' : $task->status->name }}
-                                    @else
+                                    @if ($task->status)
+                                    {{ $task->status->name === 'submitted' ? 'In Progress' : ($task->status->name === 'pending' ? 'Pending' : $task->status->name) }}
+                                @else
+                                    No status
+                                @endif
+                                                                    @else
                                         {{ $task->status->name ?? 'No status' }}
                                     @endif
                                 </td>

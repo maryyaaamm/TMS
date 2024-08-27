@@ -63,7 +63,7 @@
     <nav class="bg-black p-6 navbar">
         <div class="container mx-auto flex justify-between items-center">
             <div class="logo text-blue-600 text-2xl font-bold">
-                <a href="{{ url('/') }}" class="text-white hover:text-blue-400">TASK MANAGEMENT SYSTEM</a>
+                <a  class="text-white hover:text-blue-400">TASK MANAGEMENT SYSTEM</a>
             </div>
             <div class="flex gap-4">
                 <a href="{{ route('login') }}" class="text-white px-4 py-2 hover:text-blue-400">Login</a>

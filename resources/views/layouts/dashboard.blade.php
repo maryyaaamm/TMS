@@ -91,7 +91,7 @@
 <body class="font-sans flex flex-col min-h-screen bg-light-beige text-white">
     <nav class="bg-[#15283c] p-4 shadow-md fixed top-0 left-0 w-full z-50 flex justify-between items-center">
         <div class="logo text-blue-600 text-2xl font-bold">
-            <a href="{{ url('/') }}" class="text-white hover:text-blue-800">TASK MANAGEMENT SYSTEM</a>
+            <a class="text-white hover:text-blue-800">TASK MANAGEMENT SYSTEM</a>
         </div>
         <div class="nav-links flex items-center space-x-6">
             @auth

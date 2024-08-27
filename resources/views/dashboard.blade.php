@@ -229,26 +229,29 @@
                         </thead>
                         <tbody>
                             @foreach ($tasks as $task)
-                                <tr class="hover:bg-[#e9ecef] transition-all text-center">
-                                    <td class="border-b px-6 py-4">{{ $task->id }}</td>
-                                    <td class="border-b px-6 py-4">{{ $task->title }}</td>
-                                    <td class="px-4 py-3 border-b border-gray-300">
-                                        @if($task->status_id == 4)
-                                            <span class="status-tag status-completed">Completed</span>
-                                        @elseif($task->status_id == 2)
-                                            <span class="status-tag status-submitted">Submitted</span>
-                                        @else
-                                            <span class="status-tag status-pending">Pending</span>
-                                        @endif
-                                    </td>
-                                    <td class="border-b px-6 py-4">
-                                        {{ $task->assignedUser ? $task->assignedUser->name : 'Not assigned' }}
-                                    </td>
-                                </tr>
+                                @if ($task->assignedUser && $task->assignedUser->id === Auth::id())
+                                    <tr class="hover:bg-[#e9ecef] transition-all text-center">
+                                        <td class="border-b px-6 py-4">{{ $task->id }}</td>
+                                        <td class="border-b px-6 py-4">{{ $task->title }}</td>
+                                        <td class="px-4 py-3 border-b border-gray-300">
+                                            @if($task->status_id == 4)
+                                                <span class="status-tag status-completed">Completed</span>
+                                            @elseif($task->status_id == 2)
+                                                <span class="status-tag status-submitted">Submitted</span>
+                                            @else
+                                                <span class="status-tag status-pending">Pending</span>
+                                            @endif
+                                        </td>
+                                        <td class="border-b px-6 py-4">
+                                            {{ $task->assignedUser ? $task->assignedUser->name : 'Not assigned' }}
+                                        </td>
+                                    </tr>
+                                @endif
                             @endforeach
                         </tbody>
                     </table>
                 </div>
+                
                 <!-- Chart Wrapper -->
                 <div class="chart-wrapper">
                     <h3 class="text-2xl font-bold text-[#212529] mb-6 text-center">Task Distribution by Status</h3>

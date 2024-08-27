@@ -288,24 +288,6 @@ public function trackTime(Request $request, $taskId)
     return response()->json(['success' => true]);
 }
 
-public function filterByDate(Request $request)
-{
-    $startDate = $request->startDate;
-    $endDate = $request->endDate;
-
-    // Filter tasks based on the date range
-    $tasks = Task::whereBetween('created_at', [$startDate, $endDate])->get();
-
-    $tasksCount = $tasks->count();
-    $pendingTasksCount = $tasks->where('status_id', 2)->count();
-    $completedTasksCount = $tasks->where('status_id', 4)->count();
-
-    return response()->json([
-        'tasksCount' => $tasksCount,
-        'pendingTasksCount' => $pendingTasksCount,
-        'completedTasksCount' => $completedTasksCount,
-    ]);
-}
 
 
 }
